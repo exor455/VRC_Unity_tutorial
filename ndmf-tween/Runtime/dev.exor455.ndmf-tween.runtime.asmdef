@@ -1,0 +1,20 @@
+{
+    "name": "dev.exor455.ndmf-tween.runtime",
+    "rootNamespace": "Exor455.NdmfTween",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.vrchat.avatars",
+            "expression": "",
+            "define": "NT_VRCSDK3A"
+        }
+    ],
+    "noEngineReferences": false
+}

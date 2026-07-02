@@ -1,0 +1,27 @@
+{
+    "name": "dev.exor455.ndmf-tween.editor",
+    "rootNamespace": "Exor455.NdmfTween.Editor",
+    "references": [
+        "dev.exor455.ndmf-tween.runtime",
+        "nadena.dev.ndmf",
+        "nadena.dev.ndmf.runtime",
+        "nadena.dev.modular-avatar.core"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.vrchat.avatars",
+            "expression": "",
+            "define": "NT_VRCSDK3A"
+        }
+    ],
+    "noEngineReferences": false
+}

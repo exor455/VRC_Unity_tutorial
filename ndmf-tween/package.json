@@ -1,0 +1,17 @@
+{
+  "name": "dev.exor455.ndmf-tween",
+  "displayName": "NDMF Tween Generator",
+  "version": "0.1.0",
+  "unity": "2022.3",
+  "description": "Start/end values + duration + easing -> AnimationClips and Animator transitions, generated non-destructively at build time via NDMF and merged into the avatar by Modular Avatar.",
+  "author": {
+    "name": "exor455",
+    "url": "https://github.com/exor455"
+  },
+  "url": "https://github.com/exor455/VRC_Unity_tutorial",
+  "documentationUrl": "https://github.com/exor455/VRC_Unity_tutorial/tree/main/ndmf-tween",
+  "vpmDependencies": {
+    "nadena.dev.ndmf": ">=1.7.0 <2.0.0",
+    "nadena.dev.modular-avatar": ">=1.12.0 <2.0.0"
+  }
+}
