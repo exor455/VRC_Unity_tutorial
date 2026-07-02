@@ -4,7 +4,7 @@
 
 - 対象: VRChat Avatars 3.0 / Unity 2022.3
 - 前提: NDMF + Modular Avatar(メニュー/パラメータ統合に使用)
-- 関連ナレッジ: [vrchat-avatar-kb](../vrchat-avatar-kb/index.md)(特に 00/01/02/05)
+- 関連ナレッジ: [vrchat-avatar-kb](../vrchat-avatar-kb/index.md)(特に 00/01/02/06)
 
 > **決定記録 (2026-07-02)**: 仕様確認の質問がUI切断で届かなかったため、以下は推奨案で確定して実装済み。変更希望があれば改訂する。
 > ①方針=新規実装(既存ツールの調査結果は§0参照) ②遷移方式=Auto(ハイブリッド。CrossFade/BakedClips両実装) ③MVPトラック=全4タイプ(Blendshape/Material Float/Material Color/Transform)+Delay/Curve Overrideも初版に含めた
@@ -72,7 +72,7 @@
 
 ## 3. Poiyomiロック機構への対応(要件④)
 
-背景はKB [05-poiyomi.md](../vrchat-avatar-kb/05-poiyomi.md) 参照(ロック時にAnimated指定必須+Rename Animatedでプロパティ名が`_Prop_<マテリアル名由来サフィックス>`にリネームされる)。
+背景はKB [06-poiyomi.md](../vrchat-avatar-kb/06-poiyomi.md) 参照(ロック時にAnimated指定必須+Rename Animatedでプロパティ名が`_Prop_<マテリアル名由来サフィックス>`にリネームされる)。
 
 1. **ピッカーは常に「現在のsharedMaterialsの実プロパティ名」を列挙**する。ロック済みマテリアルならリネーム後の名前がそのまま選べる(=最も確実な経路)
 2. **ビルド時リマップ(既定ON)**: 指定プロパティが対象マテリアルに存在しない場合、`指定名+"_"`で始まるプロパティを検索。**一意に見つかれば自動リマップ**してInfoログ、複数/ゼロなら警告(候補名を列挙)。これによりアンロック時に設定→後からロックしたケースを救済
@@ -125,11 +125,11 @@
 | 相手 | 期待動作 | 根拠 |
 |---|---|---|
 | MA | Generatingで生成→MAが統合。Merge Armature移動後のパス追従もMA/NDMFが処理 | KB 00 §1.2 / 02 |
-| AAO | マージ済みアニメーションとして解析されるため、対象Blendshapeの凍結・対象プロパティの削除は自動回避される | KB 06(Animator Parser) |
-| TTT | AtlasTexture等はマテリアルを置換するが、`material._Prop`バインディングはRenderer単位のため影響なし(プロパティ名が変わらない限り) | KB 03 |
-| lilToon | アニメーション対象プロパティの定数化はlilToon 1.8+のアニメーション考慮最適化で回避される。ドキュメントにlilToon 1.8+推奨を明記 | KB 04 |
-| Poiyomi | §3の通り。Animated指定は原理的にユーザー操作が必要 | KB 05 |
-| VQT(Quest) | マテリアルプロパティのトゥイーンは、Quest変換(ToonLit等)後に対象プロパティが存在せず**無効化される**。Blendshape/Transformトラックは残る。ドキュメントに明記+ビルド時Info | KB 07 |
+| AAO | マージ済みアニメーションとして解析されるため、対象Blendshapeの凍結・対象プロパティの削除は自動回避される | KB 09(AAO: Animator Parser) |
+| TTT | AtlasTexture等はマテリアルを置換するが、`material._Prop`バインディングはRenderer単位のため影響なし(プロパティ名が変わらない限り) | KB 04(TTT) |
+| lilToon | アニメーション対象プロパティの定数化はlilToon 1.8+のアニメーション考慮最適化で回避される。ドキュメントにlilToon 1.8+推奨を明記 | KB 05(lilToon) |
+| Poiyomi | §3の通り。Animated指定は原理的にユーザー操作が必要 | KB 06(Poiyomi) |
+| VQT(Quest) | マテリアルプロパティのトゥイーンは、Quest変換(ToonLit等)後に対象プロパティが存在せず**無効化される**。Blendshape/Transformトラックは残る。ドキュメントに明記+ビルド時Info | KB 11(VQT) |
 | MMDワールド | FXへマージされたレイヤーの扱いはMA 1.12+のMMD処理に従う(必要なら`MA MMD Layer Control`を併用) | KB 02 |
 
 ## 6. パッケージ構成

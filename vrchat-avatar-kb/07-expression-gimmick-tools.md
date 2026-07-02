@@ -26,7 +26,7 @@
 
 - できること: ジェスチャー組み合わせへの表情割り当て、メニューからの表情モード切替/表情固定、まばたき・リップシンク干渉の制御、表情プレビュー、既存表情アニメの取り込み
 - **Modular Avatarと組み合わせて非破壊にFXへ統合する構成が標準**(生成物はMA経由でマージされる)
-- 注意: 表情はFXレイヤーを大きく占有するため、[AAO](06-avatar-optimizer.md)のOptimize Animatorとの併用で最適化はAAO側に任せる。MMDワールド互換はMA側の仕組み(KB [02](02-modular-avatar.md))に依存
+- 注意: 表情はFXレイヤーを大きく占有するため、[AAO](09-avatar-optimizer.md)のOptimize Animatorとの併用で最適化はAAO側に任せる。MMDワールド互換はMA側の仕組み(KB [02](02-modular-avatar.md))に依存
 
 ## ComboGestureExpressions(Haï)
 
@@ -51,7 +51,7 @@
 - 対応シェーダー: **lilToon / Poiyomi / Sunao**(現行)
 - 依存: VRCSDK >=3.2、**Modular Avatar ^1.9.9、NDMF ^1.4**。MAプレハブ形式で生成されるため非破壊でFXを直接変更しない
 - **実行順序(重要)**: TTTがLLCより先に実行される制約を宣言している(`BeforePlugin`)。テクスチャ/マテラルを差し替えるツールとの順序問題が既知のため、LLC関連の明るさ異常はまずツール群のバージョンを最新に揃える
-- Poiyomi使用時の注意: 明るさ系プロパティがロックでAnimated指定されている必要がある(LLCのセットアップが面倒を見るが、手動ロック運用時はKB [05](05-poiyomi.md)の原則が適用される)
+- Poiyomi使用時の注意: 明るさ系プロパティがロックでAnimated指定されている必要がある(LLCのセットアップが面倒を見るが、手動ロック運用時はKB [Poiyomi](06-poiyomi.md)の原則が適用される)
 
 ## FloorAdjuster(narazaka)
 
@@ -90,5 +90,5 @@
 ## 関連ページ
 
 - メニュー/トグル生成(AMCFMA / lilycalInventory / Flare)と**トゥイーン・フェード比較表**: [08-ecosystem-tools.md](08-ecosystem-tools.md)
-- 検証・分析・アップロード: [09-analysis-upload-tools.md](09-analysis-upload-tools.md)
+- 検証・分析・アップロード: [12-analysis-upload-tools.md](12-analysis-upload-tools.md)
 - 軽量化・変換: [10-optimization-conversion-tools.md](10-optimization-conversion-tools.md)

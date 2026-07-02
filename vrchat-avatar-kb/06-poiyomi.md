@@ -45,7 +45,7 @@
 ## Quest対応時の注意
 
 - **PoiyomiはQuest(Android/iOS)のVRChatアバターでは使用不可**(モバイル向けホワイトリスト外)
-- [VRCQuestTools](07-vrcquesttools.md)のPoiyomi→Toon Lit変換が利用可能(対応: メインカラー、ノーマルマップ由来の陰影、Emission 0-3。VQT 2.0.0+)。Poiyomi→Toon Standard変換はVQT開発版の実験的機能
+- [VRCQuestTools](11-vrcquesttools.md)のPoiyomi→Toon Lit変換が利用可能(対応: メインカラー、ノーマルマップ由来の陰影、Emission 0-3。VQT 2.0.0+)。Poiyomi→Toon Standard変換はVQT開発版の実験的機能
 - Poiyomi→ToonLit変換のEmission不具合はVQT 2.11.7、メインテクスチャのUVタイリング保持はVQT 2.11.6で修正(VQT側を最新に)
 - GrabPass系機能(Blur等)はQuest以前にPC以外で全滅する点に注意(ワールド制約)
 
@@ -72,9 +72,9 @@
 
 ## 関連ツール
 
-- [VRCQuestTools](07-vrcquesttools.md): Quest変換(→Toon Lit / 実験的にToon Standard)
-- [AAO](06-avatar-optimizer.md): 未使用プロパティ削除は有効、テクスチャアトラス化は非対応
-- [lilToon](04-liltoon.md): 相互移行(lilToon→Poiyomi変換は9.3.64+)
+- [VRCQuestTools](11-vrcquesttools.md): Quest変換(→Toon Lit / 実験的にToon Standard)
+- [AAO](09-avatar-optimizer.md): 未使用プロパティ削除は有効、テクスチャアトラス化は非対応
+- [lilToon](05-liltoon.md): 相互移行(lilToon→Poiyomi変換は9.3.64+)
 - ThryEditor(同梱): ロック機構の実体
 
 ## バージョン履歴

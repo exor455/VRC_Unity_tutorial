@@ -84,9 +84,9 @@ VRChatのモバイル制約の実装対象:
 ## 関連ツール
 
 - [Modular Avatar](02-modular-avatar.md): Convert Constraints / Sync Parameter Sequence / Setup Avatar for Mobileで密連携
-- [AAO](06-avatar-optimizer.md): VQT変換→AAO最適化→VQT形式チェックの順で協調
-- [TexTransTool](03-textranstool.md): TTT出力を変換対象に含めるため常にTTT後
-- [lilToon](04-liltoon.md) / [Poiyomi](05-poiyomi.md): 変換元シェーダー
+- [AAO](09-avatar-optimizer.md): VQT変換→AAO最適化→VQT形式チェックの順で協調
+- [TexTransTool](04-textranstool.md): TTT出力を変換対象に含めるため常にTTT後
+- [lilToon](05-liltoon.md) / [Poiyomi](06-poiyomi.md): 変換元シェーダー
 
 ## バージョン履歴
 

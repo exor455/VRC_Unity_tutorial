@@ -53,7 +53,7 @@
 - 孤立頂点(どの三角形にも属さない)はバウンズ制御用とみなし保持(1.9+)
 - MMD対応: MMD互換BlendShape名は保護される(T&OのMMD World Compatibility設定。Body以外のexclusion併用バグは1.9.2で修正)
 - **VRCSDKバージョン適合が厳格**: 新VRCSDKコンポーネント(VRCConstraints 1.7.10-11、VRCPerPlatformOverrides 1.8.11、VRCRaycast 1.9.9〜1.9.10、PB Global Collider 1.9.14)への対応はAAO側の更新が必須。VRCSDK更新直後はAAOのパッチ追従を確認する
-- lilToon固有処理が多い(AudioLinkマスク、AngelRing、アウトラインマスク等)→[lilToon](04-liltoon.md)側のバージョンにも依存
+- lilToon固有処理が多い(AudioLinkマスク、AngelRing、アウトラインマスク等)→[lilToon](05-liltoon.md)側のバージョンにも依存
 
 ## Quest対応時の注意
 
@@ -86,9 +86,9 @@
 ## 関連ツール
 
 - [NDMF](01-ndmf.md): 実行基盤(AnimatorServices/ObjectRegistry/プレビューを深く利用)
-- [TexTransTool](03-textranstool.md): TTTが先に実行され、AAOとUV/RemoveMesh領域をネゴシエーション
+- [TexTransTool](04-textranstool.md): TTTが先に実行され、AAOとUV/RemoveMesh領域をネゴシエーション
 - [Modular Avatar](02-modular-avatar.md): MA出力を最適化(DelayDisable等はMA 1.12+でAAOフレンドリー化)
-- [VRCQuestTools](07-vrcquesttools.md): VQT変換→AAO→VQT形式チェックの順。**AAO 1.7.0+はVQT 2.x必須**
+- [VRCQuestTools](11-vrcquesttools.md): VQT変換→AAO→VQT形式チェックの順。**AAO 1.7.0+はVQT 2.x必須**
 
 ## バージョン履歴
 

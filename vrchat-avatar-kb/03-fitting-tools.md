@@ -57,13 +57,13 @@
 
 ### Quest対応時の注意
 
-- 変換後の衣装は通常の衣装と同じ扱い。細分化オプションでポリゴンが増えている場合があるため、[AAO](06-avatar-optimizer.md)/[Meshia等](10-optimization-conversion-tools.md)での削減と[VQT](07-vrcquesttools.md)変換を通常どおり適用する
+- 変換後の衣装は通常の衣装と同じ扱い。細分化オプションでポリゴンが増えている場合があるため、[AAO](09-avatar-optimizer.md)/[Meshia等](10-optimization-conversion-tools.md)での削減と[VQT](11-vrcquesttools.md)変換を通常どおり適用する
 
 ### 関連ツール
 
 - [Modular Avatar](02-modular-avatar.md): 変換後の着せ付け
 - EreMorph(下記): 変換後の貫通修正
-- [AAO](06-avatar-optimizer.md)/[TTT](03-textranstool.md): 変換・着せ付け後の最適化
+- [AAO](09-avatar-optimizer.md)/[TTT](04-textranstool.md): 変換・着せ付け後の最適化
 
 ---
 
@@ -94,7 +94,7 @@
 
 ## KiseteneEx(Satania)
 
-衣装の位置・回転・スケールをボーン単位で調整する老舗の着せ付け補助ツール。**AAOが1.5.4で明示的に互換対応を追加**した実績があり(KB [06](06-avatar-optimizer.md)バージョン履歴)、NDMFエコシステムでの使用実績が長い。もちふぃった～登場後は「変換まではいらない、位置合わせだけしたい」ケース向け。
+衣装の位置・回転・スケールをボーン単位で調整する老舗の着せ付け補助ツール。**AAOが1.5.4で明示的に互換対応を追加**した実績があり(KB [AAO](09-avatar-optimizer.md)バージョン履歴)、NDMFエコシステムでの使用実績が長い。もちふぃった～登場後は「変換まではいらない、位置合わせだけしたい」ケース向け。
 
 ---
 
@@ -103,4 +103,4 @@
 1. **対応衣装** → MAで着せるだけ(このページの出番なし)
 2. **非対応衣装(プロファイルあり)** → もちふぃった～で変換 → MAで着せる → EreMorphで微修正
 3. **非対応衣装(プロファイルなし)** → プロファイル自作(テスト必須)or 従来手法(Blenderリトポ/手動フィッティング、KiseteneEx)
-4. 仕上げの最適化はいつも通り: [AAO](06-avatar-optimizer.md) → 必要なら[ポリゴン削減](10-optimization-conversion-tools.md) → [Quest対応](07-vrcquesttools.md)
+4. 仕上げの最適化はいつも通り: [AAO](09-avatar-optimizer.md) → 必要なら[ポリゴン削減](10-optimization-conversion-tools.md) → [Quest対応](11-vrcquesttools.md)

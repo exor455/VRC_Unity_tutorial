@@ -1,6 +1,6 @@
 # 軽量化・変換ツール(メッシュ削減・マテリアル変換)
 
-[AAO](06-avatar-optimizer.md)/[TTT](03-textranstool.md)/[VQT](07-vrcquesttools.md)を補完する、ポリゴン削減とマテリアル統一の専門ツール群。
+[AAO](09-avatar-optimizer.md)/[TTT](04-textranstool.md)/[VQT](11-vrcquesttools.md)を補完する、ポリゴン削減とマテリアル統一の専門ツール群。
 
 > 情報源: 各リポジトリのREADME/package.json(2026年前半時点)+主要ツールのプラグイン定義に現れる順序制約。
 
@@ -12,9 +12,9 @@
 | ポリゴン削減(品質重視・有償) | NDMF Mantis LOD Editor | Mantis LOD Editor Pro(Asset Store)が別途必要 |
 | アバター全体を目標ポリゴン数へ一括削減 | Overall NDMF Mesh Simplifier | |
 | 他シェーダー→lilToonへ統一 | lilMaterialConverter | UTS2対応 |
-| メッシュ統合・未使用削除・テクスチャ最適化 | [AAO](06-avatar-optimizer.md) | 削減率よりも「無駄の除去」 |
-| テクスチャアトラス化 | [TTT](03-textranstool.md) AtlasTexture | |
-| Quest向けマテリアル変換 | [VQT](07-vrcquesttools.md) | |
+| メッシュ統合・未使用削除・テクスチャ最適化 | [AAO](09-avatar-optimizer.md) | 削減率よりも「無駄の除去」 |
+| テクスチャアトラス化 | [TTT](04-textranstool.md) AtlasTexture | |
+| Quest向けマテリアル変換 | [VQT](11-vrcquesttools.md) | |
 
 ## ポリゴン削減系に共通する実行順序の知識
 
@@ -69,15 +69,15 @@ Asset Storeの**有償ポリゴン削減アセット「Mantis LOD Editor Profess
 
 マテリアルを右クリック→`lilToon/Convert material to lilToon`で**他シェーダーのマテリアルをlilToonへ変換**するツール。対応表(README)は現状 **Unity-Chan Toon Shader 2.0(UTS2)→lilToon**。
 
-- 用途: 古いUTS2ベースのアバター/衣装をlilToonに統一し、その後の最適化([AAO](06-avatar-optimizer.md)のOptimize Texture、[TTT](03-textranstool.md)のアトラス化、[VQT](07-vrcquesttools.md)のQuest変換)をlilToon前提のパイプラインに載せる下準備
+- 用途: 古いUTS2ベースのアバター/衣装をlilToonに統一し、その後の最適化([AAO](09-avatar-optimizer.md)のOptimize Texture、[TTT](04-textranstool.md)のアトラス化、[VQT](11-vrcquesttools.md)のQuest変換)をlilToon前提のパイプラインに載せる下準備
 - 破壊的(マテリアルを直接書き換える)なので**変換前にバックアップ**をREADMEが明示
-- Poiyomi→lilToonは対象外(逆方向のlilToon→PoiyomiはPoiyomi 9.3.64+が持つ。KB [05](05-poiyomi.md))
+- Poiyomi→lilToonは対象外(逆方向のlilToon→PoiyomiはPoiyomi 9.3.64+が持つ。KB [Poiyomi](06-poiyomi.md))
 
 ---
 
 ## 選定ガイド(軽量化の全体戦略)
 
-1. **現状把握**: lilAvatarUtils(テクスチャ/VRAM)+ Actual Performance Window(ランク実測)→ [09](09-analysis-upload-tools.md)
+1. **現状把握**: lilAvatarUtils(テクスチャ/VRAM)+ Actual Performance Window(ランク実測)→ [12 検証・分析](12-analysis-upload-tools.md)
 2. **無駄の除去**: AAO Trace And Optimize(未使用削除・統合・アニメーター最適化)
 3. **テクスチャ**: TTT AtlasTexture / AAO Optimize Texture(lilToon系)
 4. **ポリゴン**: 必要な場合のみ Meshia(無料)または Mantis NDMF(有償・高品質)
