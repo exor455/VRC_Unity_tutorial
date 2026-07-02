@@ -6,6 +6,9 @@
 - 前提: NDMF + Modular Avatar(メニュー/パラメータ統合に使用)
 - 関連ナレッジ: [vrchat-avatar-kb](../vrchat-avatar-kb/index.md)(特に 00/01/02/05)
 
+> **決定記録 (2026-07-02)**: 仕様確認の質問がUI切断で届かなかったため、以下は推奨案で確定して実装済み。変更希望があれば改訂する。
+> ①方針=新規実装(既存ツールの調査結果は§0参照) ②遷移方式=Auto(ハイブリッド。CrossFade/BakedClips両実装) ③MVPトラック=全4タイプ(Blendshape/Material Float/Material Color/Transform)+Delay/Curve Overrideも初版に含めた
+
 ---
 
 ## 0. 事前調査の結果(ゴール1: 既存ツールの再検証)
@@ -80,7 +83,7 @@
 
 ### 4.1 NDMFプラグイン
 - QualifiedName: `dev.exor455.ndmf-tween`
-- **Generatingフェーズ**で全処理(`BeforePlugin("nadena.dev.modular-avatar")`を明示宣言——フェーズ分離で実質保証されるが意図の明文化)
+- **Generatingフェーズ**で全処理。MAより先に実行される順序は**フェーズ分離のみで保証**する(MAはGeneratingにパスを持たないため`BeforePlugin`宣言はクロスフェーズ制約になる恐れがあり、宣言しない)
 - 手順: アバター配下の全`TweenToggle`を列挙 → 各コンポーネントについて AnimatorController(1レイヤー)+AnimationClip群を生成し `IAssetSaver.SaveAsset` で保存 → 同一GameObjectに `ModularAvatarMergeAnimator`(FX / **Absolute** pathMode / Match Avatar Write Defaults ON / Delete Attached Animator OFF)と `ModularAvatarParameters`(Boolエントリ)を追加 → `TweenToggle`コンポーネントを削除
 - 以降のマージ・パス書き換え・WD調整・Merge Armatureによる移動追従は**すべてMAに委譲**(KB 02の処理順: Merge AnimatorはMerge Armatureより前に走り、その後の移動はAnimatorServicesがパス追従)
 - クリップのバインディングパスはアバタールート相対で生成(Absoluteモード前提)
