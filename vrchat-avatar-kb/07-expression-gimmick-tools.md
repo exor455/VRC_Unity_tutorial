@@ -87,6 +87,15 @@
 | ましゅまろPB(わたあめ屋) — PhysBone変形ギミック | `wataameya.marshmallow_PB.ndmf` | MAのlateステージ(Floor Adjuster等)より前(MA宣言) |
 | ポージングシステム(ゆにさきスタジオ) | `jp.unisakistudio.posingsystemeditor.posingsystemconverter` | VQT変換より前(VQT宣言) |
 
+## よくあるトラブル(表情まわり)
+
+ユーザーの言い方: 「表情バグった」「笑うと目が変」「瞬きできない」「顔が動かない」(問診は[19 §D](19-triage-guide.md))
+
+- **表情が混ざる・特定の表情で目が壊れる**: **表情システムの二重導入**(アバター元来の表情+後入れのFaceEmo/CGE等)が最頻出。どちらか一方に統一する
+- **瞬きしなくなった**: ①表情メニューの固定解除 ②Avatar DescriptorのEyelids設定(改変で顔メッシュ名/シェイプキー名を変えると壊れる) ③表情アニメがまばたきシェイプを常時上書き ④AAOの自動凍結(Exclusionsで切り分け)の順で確認([13](13-vrchat-avatars-basics.md)/[09](09-avatar-optimizer.md))
+- **MMDワールドで表情停止**: 壊れていない可能性が高い(仕様に近い)。[02のMMD対応](02-modular-avatar.md)参照
+- **表情ツール導入後に別のギミックが壊れた**: FXレイヤー構成の変更が原因のことが多い。導入ツールを一時無効化して切り分け
+
 ## 関連ページ
 
 - メニュー/トグル生成(AMCFMA / lilycalInventory / Flare)と**トゥイーン・フェード比較表**: [08-ecosystem-tools.md](08-ecosystem-tools.md)

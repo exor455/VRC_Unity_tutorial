@@ -18,6 +18,15 @@ Avatars 3.0のアバターは複数のAnimator Controllerを層として持つ:
 - FX以外のレイヤーではマテリアル等の見た目プロパティを動かさないのが原則(FXはヒューマノイドボーンを動かさない)
 - MMDワールドはFXレイヤー1〜2を無効化して独自表情を流す→MAのMMD対応([02](02-modular-avatar.md))の背景
 
+## まばたき・視線(VRC Avatar Descriptor)
+
+まばたき(自動瞬き)と視線は**FXではなくVRC Avatar DescriptorのEye Look / Eyelids設定**で動く:
+
+- Eyelids: 主流は「Blendshapes」方式(対象の顔メッシュ+Blink用シェイプキーを指定)。**改変で顔メッシュの名前やシェイプキー名を変更/削除すると壊れる**
+- 表情アニメーションが同じシェイプキーを常時上書きしていても瞬きは止まる(WD ONの焼き込み表情が典型)
+- 最適化ツールによるシェイプキー凍結でも壊れうる([09](09-avatar-optimizer.md)のExclusionsで切り分け)
+- 「瞬きできない」の問診フローは[19 §D-3](19-triage-guide.md)
+
 ## Expression Parameters(同期パラメータ)
 
 - **同期メモリ上限: 256 bit**(VRCSDKの`VRCExpressionParameters.MAX_PARAMETER_COST`)。Bool=1bit、Int=8bit、Float=8bit

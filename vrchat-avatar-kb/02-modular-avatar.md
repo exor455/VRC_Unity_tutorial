@@ -110,6 +110,7 @@
 - **1.16.0でBone Proxy + Merge Armatureが壊れた**: 1.16.1で修正済み
 - **Visible Head Accessoryでメッシュ破損**: 1.17系(#2019)で修正。頭部直下root boneのメッシュはHead Chop絡みの既知問題が多い(1.13.3/1.13.4)
 - **ビルドは成功するがトグルが他人から見えない**: パラメータsynced設定とExpression Parameters容量超過を確認
+- **「ボタン押しても消えない」「トグルが反応しない」**(ユーザー語彙): 自分にも効かない→Menu Itemのパラメータ名とリアクティブ/アニメの接続を確認(Setup Outfitやり直しが早い)。自分には効くが他人に見えない→上記synced/容量。問診は[19 §G](19-triage-guide.md)
 
 ## 関連ツール
 
