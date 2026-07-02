@@ -48,7 +48,7 @@
 ## Quest対応時の注意
 
 - **lilToonはQuest(Android/iOS)のVRChatアバターでは使用不可**(VRChatのモバイル向けシェーダーホワイトリスト外)。Questビルドでは必ずVRChat/Mobile系またはToon Standardへの変換が必要
-- [VRCQuestTools](07-vrcquesttools.md)がlilToon→Toon Lit / Toon Standard変換を最も充実してサポート(色・影・Emission・MatCap・AO・デカールのベイク)。**lilToon 2.0対応はVQT 2.11.1+**、VQT次期メジャーはlilToon <1.10を切り捨て予定
+- [VRCQuestTools](11-vrcquesttools.md)がlilToon→Toon Lit / Toon Standard変換を最も充実してサポート(色・影・Emission・MatCap・AO・デカールのベイク)。**lilToon 2.0対応はVQT 2.11.1+**、VQT次期メジャーはlilToon <1.10を切り捨て予定
 - lilToonの`VRCFallback`設定はPC側のフォールバック(セーフティ)用。Quest対応そのものではない点に注意。1.10+でToon Standard(Outline)フォールバックを設定可能
 - ワールド側機能(LTCGI / VRC Light Volumes)はPC向け。Quest変換後には反映されない
 
@@ -73,10 +73,10 @@
 
 ## 関連ツール
 
-- [VRCQuestTools](07-vrcquesttools.md): Quest用マテリアル変換元として最重要
-- [AAO](06-avatar-optimizer.md): テクスチャ最適化・未使用プロパティ削除のlilToon対応
-- [TexTransTool](03-textranstool.md): AtlasTextureのlilToonプロパティベイク対応
-- [Poiyomi](05-poiyomi.md): 相互移行(Poiyomi 9.3.64にlilToon→Poiyomi変換機能)
+- [VRCQuestTools](11-vrcquesttools.md): Quest用マテリアル変換元として最重要
+- [AAO](09-avatar-optimizer.md): テクスチャ最適化・未使用プロパティ削除のlilToon対応
+- [TexTransTool](04-textranstool.md): AtlasTextureのlilToonプロパティベイク対応
+- [Poiyomi](06-poiyomi.md): 相互移行(Poiyomi 9.3.64にlilToon→Poiyomi変換機能)
 
 ## バージョン履歴
 

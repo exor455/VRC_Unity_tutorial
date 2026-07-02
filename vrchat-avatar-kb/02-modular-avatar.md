@@ -88,7 +88,7 @@
 - **MA Sync Parameter Sequence**はPC/Quest間のパラメータ不一致(同期ずれ)対策の中核。1.16+でプラットフォーム間の内容一致を強制
 - World Fixed Objectは1.12+でVRCParentConstraint実装になりAndroidビルド可
 - メニューアイコン自動圧縮はiOSビルド対応(1.12.0で修正)
-- VQTとの関係: VQTはMA処理後のアバターを変換する。`MA Visible Head Accessory`/`MA World Fixed Object`はMA 1.9+ならVQTに削除されない([VRCQuestTools](07-vrcquesttools.md)参照)
+- VQTとの関係: VQTはMA処理後のアバターを変換する。`MA Visible Head Accessory`/`MA World Fixed Object`はMA 1.9+ならVQTに削除されない([VRCQuestTools](11-vrcquesttools.md)参照)
 
 ## 関連ファイルパス
 
@@ -114,9 +114,9 @@
 ## 関連ツール
 
 - [NDMF](01-ndmf.md): 実行基盤(同一作者、同時更新推奨)
-- [TexTransTool](03-textranstool.md): MAの後に実行。MA Material Setter/Swapで差し替えたマテリアルへもTTTが効く(TTT 0.10+)
-- [AAO](06-avatar-optimizer.md): MAの生成物(DelayDisableレイヤー等)を認識して最適化
-- [VRCQuestTools](07-vrcquesttools.md): MA処理後にQuest変換。Setup Avatar for MobileはMA Sync Parameter Sequence等を自動追加
+- [TexTransTool](04-textranstool.md): MAの後に実行。MA Material Setter/Swapで差し替えたマテリアルへもTTTが効く(TTT 0.10+)
+- [AAO](09-avatar-optimizer.md): MAの生成物(DelayDisableレイヤー等)を認識して最適化
+- [VRCQuestTools](11-vrcquesttools.md): MA処理後にQuest変換。Setup Avatar for MobileはMA Sync Parameter Sequence等を自動追加
 
 ## バージョン履歴
 

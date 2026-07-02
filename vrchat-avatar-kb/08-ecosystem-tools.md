@@ -72,7 +72,7 @@ lilToon作者によるノーコードのメニュー/トグル生成ツール。
 
 ### バージョン要点
 - 1.0.0 (2024-08) 安定版 / 1.4.x (2024-09〜10) 安定期 / 1.5.x (2025-09) 現行
-- 関連ツール: [lilToon](04-liltoon.md)(同一作者)、[TexTransTool](03-textranstool.md)/[VRCQuestTools](07-vrcquesttools.md)(順序制約あり)
+- 関連ツール: [lilToon](05-liltoon.md)(同一作者)、[TexTransTool](04-textranstool.md)/[VRCQuestTools](11-vrcquesttools.md)(順序制約あり)
 
 ---
 

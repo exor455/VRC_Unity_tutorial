@@ -83,10 +83,10 @@
 
 ## 関連ツール
 
-- [AAO](06-avatar-optimizer.md): 双方向連携(UV/RemoveMesh領域のネゴシエーション)。実行はTTTが先
+- [AAO](09-avatar-optimizer.md): 双方向連携(UV/RemoveMesh領域のネゴシエーション)。実行はTTTが先
 - [Modular Avatar](02-modular-avatar.md): MAの後に実行。MA由来のマテリアル差し替えを認識
-- [lilToon](04-liltoon.md): AtlasTextureのプロパティベイク対応シェーダー
-- [VRCQuestTools](07-vrcquesttools.md): TTTの生成テクスチャを変換対象にするため常にTTT後
+- [lilToon](05-liltoon.md): AtlasTextureのプロパティベイク対応シェーダー
+- [VRCQuestTools](11-vrcquesttools.md): TTTの生成テクスチャを変換対象にするため常にTTT後
 
 ## バージョン履歴
 
