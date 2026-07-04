@@ -25,7 +25,7 @@
 
 ### 衣装・オブジェクト結合
 - **MA Merge Armature**: 衣装アーマチュアをアバター本体へ統合(ボーン名ヒューリスティックマッピング、Prefix/Suffix除去)。PhysBone付きヒューマノイドボーンの統合は条件付き可(1.12+)
-- **MA Bone Proxy**: オブジェクトを指定ボーン配下へ移動(アクセサリ装着)。ターゲットに他のBone Proxy/Merge Armature配下も指定可(1.16+)、Match scaleオプション(1.17+)
+- **MA Bone Proxy**: オブジェクトを指定ボーン配下へ**非破壊に**移動(アクセサリ装着)。Inspectorで **Target**(付けたいボーンをドラッグ&ドロップ)と **Attachment**(位置+回転一致/現在の位置か回転だけ保つ 等)、**Match Scale**(1.17+)を設定するだけ。ターゲットに他のBone Proxy/Merge Armature配下も指定可(1.16+)。**オブジェクト自体はシーン上のどこに置いてもよく(直接ボーンの子にする必要はない)**、実際の付け替えはビルド時に行われる。**Hierarchyで直接ボーンの子にドラッグして付け替えるのは非破壊原則違反**(KB [00 §0](00-cross-tool.md)参照)
 - **MA Mesh Settings**: Anchor Override / Boundsをアバター単位で統一設定
 - **MA Replace Object**: オブジェクトを別オブジェクトで置換(素体メッシュ差し替え等)
 - **MA Move Independently**: 親子関係を保ったまま独立移動(編集時支援)
