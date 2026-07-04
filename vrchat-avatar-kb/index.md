@@ -2,6 +2,11 @@
 
 VRChatアバターの非破壊改変(NDMFエコシステム)に関するナレッジベース。LLMセッションのRAGソースとして、任意のアバターに対する改変手順の生成・トラブルシュートに使うことを想定している。
 
+**このファイルの直リンク(LLMに貼るとき用)**:
+```
+https://raw.githubusercontent.com/exor455/VRC_Unity_tutorial/main/vrchat-avatar-kb/index.md
+```
+
 ## 前提環境
 
 - Unity 2022.3.22f1
