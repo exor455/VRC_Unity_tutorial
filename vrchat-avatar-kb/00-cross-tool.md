@@ -6,38 +6,29 @@
 
 ---
 
-## 0. 非破壊の絶対原則(スクリプト/エージェントでシーンを操作する場合)
+## 0. 非破壊の絶対原則
 
-**アバター本体のTransform階層・ボーン・メッシュ・元アセットを直接書き換えない。** NDMFエコシステムは「シーン上のオリジナルにはタグ用コンポーネントを載せるだけで、実際の変更はビルド時にクローンへ適用される」という非破壊設計が大前提。`Transform.SetParent` / `Undo.SetTransformParent` 等で**直接ヒューマノイドボーン配下にオブジェクトを付け替えるのはアンチパターン**:
+**アバター本体のTransform階層・ボーン・メッシュ・元アセットを直接いじらない。** NDMFエコシステムは「シーン上のオリジナルはそのまま、実際の変更はアップロード時(ビルド時)にだけ裏側で作られるコピーに適用される」という非破壊設計が大前提。**Hierarchyでオブジェクトを直接ヒューマノイドボーンの子にドラッグして付け替える**のはこの前提を壊す**アンチパターン**:
 
-- プレハブのオーバーライドが荒れ、アバター本体を後から更新すると装着物ごと壊れる
-- Merge Armature等の他のMAコンポーネントの処理順序に巻き込まれて事故る(ヒューマノイドリグは改変中に何度も再構築される)
-- 「コンポーネントを外せば消える」という非破壊ワークフローの前提が崩れる
+- 後でアバター本体(衣装元/ベースアバター)を更新すると、装着物ごと壊れる・位置がずれる
+- Merge Armature等、他のMAコンポーネントの処理順序に巻き込まれて事故る(ヒューマノイドリグは改変中に何度も組み直される)
+- 「コンポーネントを外せば元に戻る」という非破壊ワークフローの前提が崩れる
 
 ### 例: 「アバターの手にオブジェクトを付けたい」
 
-❌ 誤り(直接ボーン配下へReparent。破壊的):
-```csharp
-var hand = animator.GetBoneTransform(HumanBodyBones.RightHand);
-Undo.SetTransformParent(cube.transform, hand, "Parent to hand");
-```
+❌ 誤り: Hierarchyでオブジェクトをドラッグし、ボーン(例: `Hand.R`)の直接の子にする
 
-✓ 正しい(**MA Bone Proxy**で非破壊にターゲット指定。ビルド時にのみ実際の付け替えが起きる):
-```csharp
-using nadena.dev.modular_avatar.core;
+✓ 正しい(**MA Bone Proxy**、Add Componentのみで完結):
 
-// オブジェクトの置き場所は自由(直接ボーン配下でなくてよい。アバタールート直下等でOK)
-cube.transform.SetParent(avatarRoot.transform, false);
+1. オブジェクトの置き場所は自由(アバター直下でよい。ボーンの子にする必要はない)
+2. そのオブジェクトに `Add Component` → 「**MA Bone Proxy**」を追加
+3. Inspectorの **Target** 欄に、付けたいボーン(例: 右手)をHierarchyからドラッグ&ドロップ
+4. **Attachment** でボーンの位置・回転への合わせ方(一致させる/現在の位置か回転だけ保つ等)を選択
+5. スケールも追従させたい場合は **Match Scale** をON
 
-var proxy = cube.AddComponent<ModularAvatarBoneProxy>();
-proxy.boneReference = HumanBodyBones.RightHand;
-proxy.attachmentMode = BoneProxyAttachmentMode.AsChildAtRoot; // ボーンの位置・回転に合わせる
-// proxy.matchScale = true; // ボーンのスケールも追従させたい場合(1.17+)
-```
+実際の付け替えはアップロード時(ビルド時)にのみ行われるため、Unity編集中に元のオブジェクト構成が壊れることはない(見た目はエディタ上で自動プレビューされる)。詳細は[02 Modular Avatar](02-modular-avatar.md)。
 
-`ModularAvatarBoneProxy`のフィールド(ソース: `Runtime/ModularAvatarBoneProxy.cs`): `boneReference`(`HumanBodyBones`)、`subPath`(ボーンからの相対パス、通常未使用)、`attachmentMode`(`Unset`/`AsChildAtRoot`/`AsChildKeepWorldPose`/`AsChildKeepRotation`/`AsChildKeepPosition`)、`matchScale`(bool)。詳細は[02 Modular Avatar](02-modular-avatar.md)。
-
-**この原則は「ボーンに追従させる」以外の生成タスクにも共通する**: トグル追加なら`ModularAvatarMenuItem`+`ModularAvatarObjectToggle`、アニメーター統合なら`ModularAvatarMergeAnimator`のように、**常にMAの非破壊コンポーネントを追加する方向で実装し、元の階層・アセット・アニメーターを直接改変しない**。
+**この原則は「ボーンに追従させる」以外の作業にも共通する**: トグルを作るなら「**MA Menu Item**」「**MA Object Toggle**」、アニメーターを差し込むなら「**MA Merge Animator**」のように、**常にMAのコンポーネントをAdd Componentで足す方向で作業し、元の階層・アセット・アニメーターを直接いじらない**。
 
 ---
 
