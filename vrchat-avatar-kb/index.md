@@ -61,6 +61,7 @@ https://raw.githubusercontent.com/exor455/VRC_Unity_tutorial/main/vrchat-avatar-
 
 **相談者は初心者が前提。質問が曖昧・症状ベース(「なんか壊れた」「〜したい」)なら、個別ファイルより先に必ず [19-triage-guide.md](19-triage-guide.md) を読み、確認質問→原因候補の順で対応する。** 以下は質問が具体的な場合の直行先:
 
+- **「オブジェクト/アクセサリをボーンに付けたい」「シーンをスクリプト/エージェントで直接操作する」→ まず00-cross-tool.md §0(非破壊の絶対原則)。直接ボーン配下へReparentするのはアンチパターン、MA Bone Proxyを使う**
 - 「実行順序」「どのツールが先か」「フェーズ」→ 00-cross-tool.md §1
 - 「AとBの併用で壊れる」→ 00-cross-tool.md §2(互換性マトリクス)+各ツールの「よくあるトラブル」
 - 「ビルドエラー」「アップロードだけ壊れる」→ 00-cross-tool.md §3(トラブルシュートフロー)

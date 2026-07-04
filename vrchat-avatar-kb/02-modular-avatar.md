@@ -25,7 +25,7 @@
 
 ### 衣装・オブジェクト結合
 - **MA Merge Armature**: 衣装アーマチュアをアバター本体へ統合(ボーン名ヒューリスティックマッピング、Prefix/Suffix除去)。PhysBone付きヒューマノイドボーンの統合は条件付き可(1.12+)
-- **MA Bone Proxy**: オブジェクトを指定ボーン配下へ移動(アクセサリ装着)。ターゲットに他のBone Proxy/Merge Armature配下も指定可(1.16+)、Match scaleオプション(1.17+)
+- **MA Bone Proxy**(`ModularAvatarBoneProxy`, `nadena.dev.modular_avatar.core`名前空間): オブジェクトを指定ボーン配下へ**非破壊に**移動(アクセサリ装着)。フィールド: `boneReference`(`HumanBodyBones`)、`subPath`(ボーンからの相対パス)、`attachmentMode`(`AsChildAtRoot`=位置+回転一致 / `AsChildKeepWorldPose` / `AsChildKeepRotation` / `AsChildKeepPosition`)、`matchScale`(1.17+)。ターゲットに他のBone Proxy/Merge Armature配下も指定可(1.16+)。**オブジェクト自体はシーン上のどこに置いてもよく(直接ボーンの子にする必要はない)**、実際の付け替えはビルド時のBoneProxyPrepassが行う。「スクリプトで直接`SetParent`してボーンの子にする」のは非破壊原則違反(KB [00 §0](00-cross-tool.md)参照)
 - **MA Mesh Settings**: Anchor Override / Boundsをアバター単位で統一設定
 - **MA Replace Object**: オブジェクトを別オブジェクトで置換(素体メッシュ差し替え等)
 - **MA Move Independently**: 親子関係を保ったまま独立移動(編集時支援)
