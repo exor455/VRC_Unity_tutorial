@@ -84,6 +84,7 @@
 - Int自動パラメータ値が0-255を超えるとビルドエラー(1.18+。以前は黙って範囲外を割り当て)
 - Merge Armature中のヒューマノイドボーン+PhysBoneは「子ヒューマノイドボーンが全PhysBoneから除外されている場合」のみ統合可(1.12+)
 - MAのGCはアニメーションから参照されるオブジェクトを削除しない(1.15+)。それ以前は削除されることがあった
+- **`ModularAvatarObjectToggle` のシリアライズフィールド名(エディタスクリプト操作時)**: SerializedObject 経由でトグル対象リストを読む際、`FindProperty("Objects")` / `FindProperty("objects")` / `FindProperty("m_Objects")` はいずれもヒットしない(実測)。正しい名前は **`m_objects`(小文字o)**。各要素のサブプロパティ構造は `m_objects[i].Object.referencePath`(string: アバタールートからの相対パス)と `m_objects[i].Active`(bool)。同列に `m_inverted`(bool)もある。エントリ追加は `arraySize` をインクリメントし `referencePath` と `Active` を設定後、`ApplyModifiedProperties` を呼ぶ。環境: Modular Avatar (nadena.dev.modular_avatar.core) / Unity 2022.3.22f1 / VRCSDK3プロジェクト、2026-07-05実測確認。
 
 ## Quest対応時の注意
 
