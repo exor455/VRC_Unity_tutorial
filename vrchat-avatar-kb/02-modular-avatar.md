@@ -111,6 +111,38 @@
 **落とし穴 — 自動パラメータ割当の名前は `Control.name` ではなく GO 名から生成される(実測)**:
 `Control.parameter.name` を空にして自動割当にすると、生成される同期パラメータ名は `__MA/AutoParam/<GameObject名>$<hash>`(Bool)になり、**メニュー項目の表示名も GO 名が採用される**(`Control.name` ではない)。例: GO 名 = "ExampleToggle"・`Control.name` = "Example" のとき、パラメータ名・表示名ともに "ExampleToggle" になる。狙った表示名・パラメータ名にしたい場合は、GO 名をその名前に合わせるか `Control.parameter.name` を明示設定する。
 
+### メニュー編集のGUIショートカット(Create Toggle / Extract Menu)
+
+メニュー項目の生成・整頓を最速で行う2つのUnityエディタメニュー操作。対象: MA 1.17.1 / Unity 2022.3.22f1 / VRCSDK3 Avatars。
+
+**出典**: 公式doc [Simple Object Toggle tutorial](https://modular-avatar.nadena.dev/docs/tutorials/object_toggle) / [Edit menus tutorial](https://modular-avatar.nadena.dev/docs/tutorials/menu)。以下の非自明な挙動はソース `Editor/Inspector/Menu/ToggleCreatorShortcut.cs` / `Editor/Menu/MenuExtractor.cs` で確認。
+
+#### Create Toggle(右クリック最速生成)
+
+Hierarchyで対象GOを右クリック → `GameObject/Modular Avatar/Create Toggle for Selection`。
+
+- 生成物: 選択オブジェクトを対象にした Object Toggle + Menu Item を含む空GOがアバター配下に生成される。単体選択時は Menu Installer 付き。複数選択時はサブメニューを自動生成して子としてまとめ、親側に Installer を付け子トグルには付けない(MA #1437以降)
+- `Create Toggle`(選択対象なし版)は空の "New Toggle" GO(MA Menu Item + MA Menu Installer + 空の MA Object Toggle)を生成する
+
+**★非自明な罠 — 生成時の activeSelf で ON/OFF の意味が決まる(ソース: `ToggleCreatorShortcut.cs`)**:
+`Create Toggle for Selection` は**対象オブジェクトの現在の `activeSelf` を読み、Object Toggle の Active をその反対値に設定する**(`Active = !selected.activeSelf`)。生成GOの名前も `activeSelf=true` なら "{name} OFF"、`activeSelf=false` なら "{name} ON" になる。
+→ **トグルを作る前に対象を「意図したデフォルト表示状態」にしておくこと**。作成時の activeSelf が狙いと逆だと、生成されるトグルのON/OFFの意味が反転し、期待と逆の挙動になる。
+
+**位置づけ**: 単発トグルの最速手段。ただし単体ごとに Installer 付き GO を量産するため構造が散らかりやすい。精密・大量・スクリプト運用では「### メニュー付きトグルの組み立て骨格」に示す定番構成を使う。
+
+#### Extract Menu(既存 Expressions メニューをオブジェクト化)
+
+アバタールートを選択 → `GameObject/Modular Avatar/Extract Menu`。
+
+- 生成物: "Avatar Menu" GO が追加され、`MA Menu Installer` + `MA Menu Group` を持つ。元メニューのトップ階層の各コントロールが子GOの `MA Menu Item` になる
+- サブメニューは各 Menu Item / Menu Installer インスペクタの「オブジェクトに展開(extract to objects)」ボタンで1階層ずつ再帰的に展開できる
+- 展開後はヒエラルキー上のドラッグ&ドロップでメニュー項目を移動・再編できる(既存 EXmenu の整理・組み替えに有利)
+
+**★「破壊的」の正体 — expressionsMenu がプレースホルダーに差し替わる(ソース: `MenuExtractor.cs`)**:
+展開時に**アバターの `VRCAvatarDescriptor.expressionsMenu` を空のプレースホルダーアセット(元アセット名 + " placeholder.asset")に差し替える**。元のメニューアセット自体は削除されないが、アバターからの参照が外れ、以後メニューはMAオブジェクト側が単一の正になる。VRCSDKがパラメータ定義時にメニューアセットの存在を要求するためダミーを噛ませる仕様。元アセットが Packages 配下の場合プレースホルダーは Assets ルートに作られる。**元に戻すには `expressionsMenu` を元アセットに指し直す。**
+
+**用途**: 既存アバターのメニュー構成をMAの非破壊オブジェクト編集へ載せ替えて再編するときに使う破壊的操作。
+
 ### 衣装トグルのOFFリスト漏れ — 部位シグネチャによる機械判定
 
 衣装切替トグル(MA Object Toggle)のOFFリストをオブジェクト名のみで組むと、同スロットの既定衣装(下着・靴など)を取りこぼしやすい。SkinnedMeshRendererのスキンウェイトを使った機械判定手順が有効(実測: Unity 2022.3.22f1 / MA 1.17.1 / NDMF 1.14.0)。
