@@ -86,6 +86,14 @@
 - MAのGCはアニメーションから参照されるオブジェクトを削除しない(1.15+)。それ以前は削除されることがあった
 - **`ModularAvatarObjectToggle` のシリアライズフィールド名(エディタスクリプト操作時)**: SerializedObject 経由でトグル対象リストを読む際、`FindProperty("Objects")` / `FindProperty("objects")` / `FindProperty("m_Objects")` はいずれもヒットしない(実測)。正しい名前は **`m_objects`(小文字o)**。各要素のサブプロパティ構造は `m_objects[i].Object.referencePath`(string: アバタールートからの相対パス)と `m_objects[i].Active`(bool)。同列に `m_inverted`(bool)もある。エントリ追加は `arraySize` をインクリメントし `referencePath` と `Active` を設定後、`ApplyModifiedProperties` を呼ぶ。環境: Modular Avatar (nadena.dev.modular_avatar.core) / Unity 2022.3.22f1 / VRCSDK3プロジェクト、2026-07-05実測確認。
   - **`referencePath` と `targetObject` は必ず両方設定する(実測)**: MAは `m_objects[i].Object.targetObject`(UnityネイティブのGameObject参照、objectReferenceValue)を正として管理し、`referencePath` はドメインリロード時に `targetObject` のGameObject名から再生成される。そのため `referencePath` のみ SerializedObject で書き換えると直後の読み返しは正しいが**ドメインリロード後に静かに巻き戻る**。`InsertArrayElementAtIndex` で前要素を複製した場合は `targetObject` が複製元のままクローンされるため、`referencePath` だけ上書きしてもリロード後は複製元と同じ対象に戻る。スクリプトから編集する際は `referencePath`(string)と `targetObject`(objectReferenceValue)の**両方**を必ず設定すること。検証は同一ジョブ内の読み返しでは不十分で、**ドメインリロードを跨いだ再ダンプ**で永続性を確認する。(実測: Unity 2022.3.22f1 / MA 1.17.1 / NDMF 1.14.0)
+- **`ModularAvatarMaterialSetter` のシリアライズフィールド名(エディタスクリプト操作時)**: SerializedObject 経由でマテリアル差し替えリストを操作する際の構造は以下の通り(実測: Unity 2022.3.22f1 / MA 1.17.1 / NDMF 1.14.0)。
+  - フィールド名は **`m_objects`**。型は `List<MaterialSwitchObject>`
+  - 各要素のサブプロパティ:
+    - `m_objects[i].Object`(型: `AvatarObjectReference`, SerializedPropertyType.Generic) — `FindPropertyRelative("Object")` で取得し、さらに `FindPropertyRelative("referencePath")`(string: アバタールートからの相対Transform名パス)でアクセスする。`objectReferenceValue` では取れない点に注意
+    - `m_objects[i].Material`(Material参照: `objectReferenceValue` で設定)
+    - `m_objects[i].MaterialIndex`(int: 対象マテリアルスロット番号)
+  - `Object.targetObject`(GameObjectへのObjectReference)は **bake時には不要**。`referencePath` だけで動作する(MA Object Toggle の `targetObject` 必須ルールとは異なる)
+  - エントリ追加は `arraySize` をインクリメントし `InsertArrayElementAtIndex` 後、`referencePath`・`Material`・`MaterialIndex` を設定して `ApplyModifiedProperties` を呼ぶ
 
 ### メニュー付きトグルの組み立て骨格
 
@@ -110,6 +118,8 @@
 
 **落とし穴 — 自動パラメータ割当の名前は `Control.name` ではなく GO 名から生成される(実測)**:
 `Control.parameter.name` を空にして自動割当にすると、生成される同期パラメータ名は `__MA/AutoParam/<GameObject名>$<hash>`(Bool)になり、**メニュー項目の表示名も GO 名が採用される**(`Control.name` ではない)。例: GO 名 = "ExampleToggle"・`Control.name` = "Example" のとき、パラメータ名・表示名ともに "ExampleToggle" になる。狙った表示名・パラメータ名にしたい場合は、GO 名をその名前に合わせるか `Control.parameter.name` を明示設定する。
+
+**MA Material Setter との組み合わせは最小構成(単一GO)が確実**: リアクティブコンポーネントとして `MA Material Setter` を使う場合、「定番構成(フォルダ=親子2階層)」の Menu Group 経由ではなく、`MA Menu Installer` + `MA Menu Item` + `MA Material Setter` を**1つのGOに集約した最小構成**を使う方が確実。NDMF Manual Bake で動作確認済み(実測: Unity 2022.3.22f1 / MA 1.17.1 / NDMF 1.14.0)。
 
 ### メニュー編集のGUIショートカット(Create Toggle / Extract Menu)
 
@@ -161,6 +171,8 @@ Hierarchyで対象GOを右クリック → `GameObject/Modular Avatar/Create Tog
 メニュー→パラメータ→リアクティブの結線が実際に機能するかを確認する調査手順。NDMFプレビューはスクリプトから発火できないため、Manual Bakeの生成物を読んで確認するのが確実(実測: Unity 2022.3.22f1 / MA 1.17.1 / NDMF 1.14.0)。
 
 **呼び出し**: `nadena.dev.ndmf.AvatarProcessor.ProcessAvatarUI(GameObject)` (public static) をリフレクション経由で呼ぶ。
+
+**注意: アバター本体を直接渡すこと。Instantiate したcloneを渡すと二重Cloneが作られる**: `ProcessAvatarUI(avatar)` の引数にはシーン上のアバターGO本体を直接渡す。`Object.Instantiate(avatar)` で作ったcloneを渡すと、NDMF内部でさらにInstantiateが行われ `<名前>(Clone)(Clone)` が作られ、生成物の検索が複雑になる。本体を渡した場合は `<アバター名>(Clone)` がシーン上に現れるので、`GameObject.Find("<アバター名>(Clone)")` で取得できる。(実測: Unity 2022.3.22f1 / MA 1.17.1 / NDMF 1.14.0)
 
 **生成物の確認対象**: `<アバター名>(Clone)` がシーンに残る。この Clone の以下を読む:
 - `VRCExpressionParameters`: 生成パラメータ名・型・synced/saved フラグ
