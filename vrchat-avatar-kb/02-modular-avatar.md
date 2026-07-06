@@ -85,6 +85,20 @@
 - Merge Armature中のヒューマノイドボーン+PhysBoneは「子ヒューマノイドボーンが全PhysBoneから除外されている場合」のみ統合可(1.12+)
 - MAのGCはアニメーションから参照されるオブジェクトを削除しない(1.15+)。それ以前は削除されることがあった
 - **`ModularAvatarObjectToggle` のシリアライズフィールド名(エディタスクリプト操作時)**: SerializedObject 経由でトグル対象リストを読む際、`FindProperty("Objects")` / `FindProperty("objects")` / `FindProperty("m_Objects")` はいずれもヒットしない(実測)。正しい名前は **`m_objects`(小文字o)**。各要素のサブプロパティ構造は `m_objects[i].Object.referencePath`(string: アバタールートからの相対パス)と `m_objects[i].Active`(bool)。同列に `m_inverted`(bool)もある。エントリ追加は `arraySize` をインクリメントし `referencePath` と `Active` を設定後、`ApplyModifiedProperties` を呼ぶ。環境: Modular Avatar (nadena.dev.modular_avatar.core) / Unity 2022.3.22f1 / VRCSDK3プロジェクト、2026-07-05実測確認。
+  - **`referencePath` と `targetObject` は必ず両方設定する(実測)**: MAは `m_objects[i].Object.targetObject`(UnityネイティブのGameObject参照、objectReferenceValue)を正として管理し、`referencePath` はドメインリロード時に `targetObject` のGameObject名から再生成される。そのため `referencePath` のみ SerializedObject で書き換えると直後の読み返しは正しいが**ドメインリロード後に静かに巻き戻る**。`InsertArrayElementAtIndex` で前要素を複製した場合は `targetObject` が複製元のままクローンされるため、`referencePath` だけ上書きしてもリロード後は複製元と同じ対象に戻る。スクリプトから編集する際は `referencePath`(string)と `targetObject`(objectReferenceValue)の**両方**を必ず設定すること。検証は同一ジョブ内の読み返しでは不十分で、**ドメインリロードを跨いだ再ダンプ**で永続性を確認する。(実測: Unity 2022.3.22f1 / MA 1.17.1 / NDMF 1.14.0)
+
+### 衣装トグルのOFFリスト漏れ — 部位シグネチャによる機械判定
+
+衣装切替トグル(MA Object Toggle)のOFFリストをオブジェクト名のみで組むと、同スロットの既定衣装(下着・靴など)を取りこぼしやすい。SkinnedMeshRendererのスキンウェイトを使った機械判定手順が有効(実測: Unity 2022.3.22f1 / MA 1.17.1 / NDMF 1.14.0)。
+
+**手順:**
+
+1. **部位シグネチャの生成**: 各SkinnedMeshRendererの全頂点ボーンウェイトをヒューマノイド8カテゴリ(Head系 / TorsoUpper=Chest・Spine・Shoulder / Arm / Hand / Hips / LegUpper / LegLower / Foot系)に集計・正規化し「部位シグネチャ」とする。非ヒューマノイドボーン(髪・衣装ボーン)はTransform親を遡り最初のヒューマノイドボーンのカテゴリへ合算する。
+   - **衣装が独自アーマチャーを持つ場合の注意**: そのボーンは `Animator.GetBoneTransform()` が返すTransformと別インスタンスになりヒットしない。ヒューマノイドボーン名→カテゴリの名前マップをフォールバックとして用意する。
+2. **スロット推定**: Foot ≥ 0.5 → 足元 / Head ≥ 0.5 → 頭 / TorsoUpper+Arm ≥ 0.6 → 上衣 / Hips+LegUpper+LegLower ≥ 0.6 → 下衣。
+3. **複数メッシュの合成**: 新衣装が複数メッシュを持つ場合は**カテゴリ別MAXで合成**する。平均では下半身担当メッシュの成分が希薄化し、ショーツ・スパッツ等の競合が閾値を割る(実測で0.24〜0.27に低下)。
+4. **競合判定**: 新衣装の合成シグネチャと既定衣装各メッシュのシグネチャの要素ごとのmin和(オーバーラップ)が **≥ 0.3 → 自動OFF候補**。ただし**足元スロット(Foot ≥ 0.5)は自動OFFにせず「要判断」に分類**する(新衣装が足をカバーしない場合、靴を消すかどうかは改変の意図に依存するため)。
+5. **出力分類**: 「自動OFF候補 / 残す / 要判断」の3リストにまとめ、要判断のみ目視確認(スクリーンショット等)に回す。
 
 ## Quest対応時の注意
 
@@ -117,6 +131,7 @@
 - **ビルドは成功するがトグルが他人から見えない**: パラメータsynced設定とExpression Parameters容量超過を確認
 - **「ボタン押しても消えない」「トグルが反応しない」**(ユーザー語彙): 自分にも効かない→Menu Itemのパラメータ名とリアクティブ/アニメの接続を確認(Setup Outfitやり直しが早い)。自分には効くが他人に見えない→上記synced/容量。問診は[19 §G](19-triage-guide.md)
 - **「スケールを変えても勝手に元に戻る」**(ユーザー語彙): そのオブジェクトにBone Proxyが付いていて**Match Scale ON**になっていないか確認。ONだとlocalScaleがボーンのスケールで上書きされ続ける。固定したいスケールがあるならMatch ScaleをOFFにしてから設定し直す
+- **スクリプトで書き換えたトグル対象がドメインリロード後に元に戻る**: `m_objects[i].Object.referencePath` を SerializedObject 経由で書き換えてもドメインリロード後に `targetObject`(GameObjectへのUnityネイティブ参照)からパスが再生成されて巻き戻る。`InsertArrayElementAtIndex` による複製は `targetObject` が複製元のままクローンされるため特に注意。`referencePath` と `targetObject`(objectReferenceValue)の**両方**を設定すること。同一ジョブ内の読み返しでは検証不十分で、ドメインリロード後の再ダンプで永続性を確認する。詳細は「改変時の注意点 §m_objects」参照。(実測: Unity 2022.3.22f1 / MA 1.17.1 / NDMF 1.14.0)
 
 ## 関連ツール
 
