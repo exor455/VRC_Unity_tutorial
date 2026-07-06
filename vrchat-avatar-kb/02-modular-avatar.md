@@ -87,6 +87,30 @@
 - **`ModularAvatarObjectToggle` のシリアライズフィールド名(エディタスクリプト操作時)**: SerializedObject 経由でトグル対象リストを読む際、`FindProperty("Objects")` / `FindProperty("objects")` / `FindProperty("m_Objects")` はいずれもヒットしない(実測)。正しい名前は **`m_objects`(小文字o)**。各要素のサブプロパティ構造は `m_objects[i].Object.referencePath`(string: アバタールートからの相対パス)と `m_objects[i].Active`(bool)。同列に `m_inverted`(bool)もある。エントリ追加は `arraySize` をインクリメントし `referencePath` と `Active` を設定後、`ApplyModifiedProperties` を呼ぶ。環境: Modular Avatar (nadena.dev.modular_avatar.core) / Unity 2022.3.22f1 / VRCSDK3プロジェクト、2026-07-05実測確認。
   - **`referencePath` と `targetObject` は必ず両方設定する(実測)**: MAは `m_objects[i].Object.targetObject`(UnityネイティブのGameObject参照、objectReferenceValue)を正として管理し、`referencePath` はドメインリロード時に `targetObject` のGameObject名から再生成される。そのため `referencePath` のみ SerializedObject で書き換えると直後の読み返しは正しいが**ドメインリロード後に静かに巻き戻る**。`InsertArrayElementAtIndex` で前要素を複製した場合は `targetObject` が複製元のままクローンされるため、`referencePath` だけ上書きしてもリロード後は複製元と同じ対象に戻る。スクリプトから編集する際は `referencePath`(string)と `targetObject`(objectReferenceValue)の**両方**を必ず設定すること。検証は同一ジョブ内の読み返しでは不十分で、**ドメインリロードを跨いだ再ダンプ**で永続性を確認する。(実測: Unity 2022.3.22f1 / MA 1.17.1 / NDMF 1.14.0)
 
+### メニュー付きトグルの組み立て骨格
+
+`MA Menu Installer` / `MA Menu Item` / `MA Menu Group` / `MA Object Toggle` の存在は「対応する改変パターン」に列挙されているが、それらをどう配置するとメニュー付きトグルが成立するかの骨格は別途示す必要がある。以下2パターンを示す(実測: Unity 2022.3.22f1 / MA 1.17.1 / NDMF 1.14.0、NDMF Manual Bakeで動作確認)。
+
+**最小構成(単一GO平置き)**: 1つの空GOに `MA Menu Installer` + `MA Menu Item`(type=Toggle) + `MA Object Toggle` を載せる。Menu Installer の `installTargetMenu = null` でアバタールートの Expressions メニューへ直接挿入される。同一GO上の Menu Item(Toggle)と Object Toggle が**自動結線・自動パラメータ割当**される。単発トグルはこれで足りる。Bakeで「ルートメニュー項目 + 自動 Bool パラメータ + FX の activeSelf 切替結線」が生成されることを確認。
+
+**定番構成(フォルダ=親子2階層)**: 親GOに `MA Menu Installer` + `MA Menu Group`、子GO群に各 `MA Menu Item`(Toggle) + リアクティブコンポーネント(オブジェクトON/OFFなら `MA Object Toggle`、マテリアル切替なら `MA Material Setter` 等、用途で差し替え)を載せる。`MA Menu Group` が「子オブジェクト群=メニュー項目」を成立させる箱の役割を担い、メニュー上でフォルダにまとまる。日本圏で最もよく使われる形。
+
+**Menu Item の主なシリアライズフィールド(スクリプト操作時の参考)**:
+
+| フィールド | 型 | 備考 |
+|---|---|---|
+| `Control.name` | string | メニュー表示名候補(後述の落とし穴あり) |
+| `Control.type` | enum | Toggle = index 1 |
+| `Control.parameter.name` | string | 空なら自動割当(GO名から生成) |
+| `Control.value` | float | Toggle は通常 1.0 |
+| `isSynced` / `isSaved` / `isDefault` | bool | 自動割当パラメータの属性 |
+| `automaticValue` | bool | ON のとき value を自動決定 |
+
+`installTargetMenu`(Menu Installer フィールド): null = アバタールートメニューへ挿入。
+
+**落とし穴 — 自動パラメータ割当の名前は `Control.name` ではなく GO 名から生成される(実測)**:
+`Control.parameter.name` を空にして自動割当にすると、生成される同期パラメータ名は `__MA/AutoParam/<GameObject名>$<hash>`(Bool)になり、**メニュー項目の表示名も GO 名が採用される**(`Control.name` ではない)。例: GO 名 = "ExampleToggle"・`Control.name` = "Example" のとき、パラメータ名・表示名ともに "ExampleToggle" になる。狙った表示名・パラメータ名にしたい場合は、GO 名をその名前に合わせるか `Control.parameter.name` を明示設定する。
+
 ### 衣装トグルのOFFリスト漏れ — 部位シグネチャによる機械判定
 
 衣装切替トグル(MA Object Toggle)のOFFリストをオブジェクト名のみで組むと、同スロットの既定衣装(下着・靴など)を取りこぼしやすい。SkinnedMeshRendererのスキンウェイトを使った機械判定手順が有効(実測: Unity 2022.3.22f1 / MA 1.17.1 / NDMF 1.14.0)。
@@ -99,6 +123,21 @@
 3. **複数メッシュの合成**: 新衣装が複数メッシュを持つ場合は**カテゴリ別MAXで合成**する。平均では下半身担当メッシュの成分が希薄化し、ショーツ・スパッツ等の競合が閾値を割る(実測で0.24〜0.27に低下)。
 4. **競合判定**: 新衣装の合成シグネチャと既定衣装各メッシュのシグネチャの要素ごとのmin和(オーバーラップ)が **≥ 0.3 → 自動OFF候補**。ただし**足元スロット(Foot ≥ 0.5)は自動OFFにせず「要判断」に分類**する(新衣装が足をカバーしない場合、靴を消すかどうかは改変の意図に依存するため)。
 5. **出力分類**: 「自動OFF候補 / 残す / 要判断」の3リストにまとめ、要判断のみ目視確認(スクリーンショット等)に回す。
+
+### NDMF Manual Bake によるトグル結線の検証
+
+メニュー→パラメータ→リアクティブの結線が実際に機能するかを確認する調査手順。NDMFプレビューはスクリプトから発火できないため、Manual Bakeの生成物を読んで確認するのが確実(実測: Unity 2022.3.22f1 / MA 1.17.1 / NDMF 1.14.0)。
+
+**呼び出し**: `nadena.dev.ndmf.AvatarProcessor.ProcessAvatarUI(GameObject)` (public static) をリフレクション経由で呼ぶ。
+
+**生成物の確認対象**: `<アバター名>(Clone)` がシーンに残る。この Clone の以下を読む:
+- `VRCExpressionParameters`: 生成パラメータ名・型・synced/saved フラグ
+- `VRCExpressionsMenu`: メニュー項目とそのパラメータ名が VRCExpressionParameters と一致するか
+- FX `AnimatorController`: activeSelf 切替ステートが存在するか
+
+**後始末**: 検査後、Clone を `GameObject.Find("<アバター名>(Clone)")` 等で取得して `Object.DestroyImmediate` で削除する(シーンを汚さない)。Bakeが途中で例外失敗しても Clone が残ることが多く検査は可能。
+
+**切り分け注意**: アバター固有の既存不良(例: PhysBone のコンポーネントリストに null エントリ)があると `PhysbonesBlockerPluginPass` で `ArgumentException` が出るが、これは検証対象のトグルとは無関係なことがある。エラーの発生タイミングと対象を確認して切り分ける。
 
 ## Quest対応時の注意
 
