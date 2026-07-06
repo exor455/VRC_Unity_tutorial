@@ -187,6 +187,8 @@ Hierarchyで対象GOを右クリック → `GameObject/Modular Avatar/Create Tog
 
 **null motion State による bake 例外の切り分け**: NDMF Manual Bake またはビルドが `VirtualClip.Commit` 系の例外で途中停止する場合、対象アバターの FX 等 AnimatorController に **motion が null の State**(制作者が表情差し替え用に残したプレースホルダー State 等)が含まれていることがある。切り分け手順: アバターの FX 等を一時的に空の AnimatorController に差し替えて bake が通るか確認する。通れば null motion State が原因。恒久対処は当該 State に空 AnimationClip を割り当てるか State を除去する。検証後は元コントローラを必ず復元すること。
 
+**AAO 等 Optimizing フェーズのツールがある環境での追加観察**: FX コントローラだけを空換装しても、同じ `ArgumentException`(`PhysbonesBlockerPluginPass`→`VirtualClip.Commit`)で bake が止まることが観測されている(観測: MA 1.17.1 / NDMF 1.14.0 / AAO 1.9.15)。他のアニメーションレイヤー(Gesture / Action 等)にも null motion State が含まれている可能性がある(root cause は完全特定していない)。検証 bake を通したいときは FX だけでなく**全アニメーションレイヤーの中身**を疑う。この状態で得た bake 生成物は不完全であり、最適化数値の計測には使えない。
+
 ## Quest対応時の注意
 
 - MA自体はQuestビルドでも同様に動作する(プラットフォーム非依存の変換)

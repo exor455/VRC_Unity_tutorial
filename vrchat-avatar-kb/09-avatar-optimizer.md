@@ -54,6 +54,7 @@
 - MMD対応: MMD互換BlendShape名は保護される(T&OのMMD World Compatibility設定。Body以外のexclusion併用バグは1.9.2で修正)
 - **VRCSDKバージョン適合が厳格**: 新VRCSDKコンポーネント(VRCConstraints 1.7.10-11、VRCPerPlatformOverrides 1.8.11、VRCRaycast 1.9.9〜1.9.10、PB Global Collider 1.9.14)への対応はAAO側の更新が必須。VRCSDK更新直後はAAOのパッチ追従を確認する
 - lilToon固有処理が多い(AudioLinkマスク、AngelRing、アウトラインマスク等)→[lilToon](05-liltoon.md)側のバージョンにも依存
+- **`TraceAndOptimize` コンポーネントの型情報(C# スクリプト / reflection 経由で AddComponent する場合の参考, 実測)**: 型フルネーム `Anatawa12.AvatarOptimizer.TraceAndOptimize`、アセンブリ `com.anatawa12.avatar-optimizer.runtime`。reflection で取得する場合は `AppDomain.CurrentDomain.GetAssemblies()` から `a.GetName().Name == "com.anatawa12.avatar-optimizer.runtime"` のアセンブリを絞り込み、`Type.Name == "TraceAndOptimize"` で特定するのが確実。
 
 ## Quest対応時の注意
 
