@@ -45,6 +45,8 @@ https://raw.githubusercontent.com/exor455/VRC_Unity_tutorial/main/vrchat-avatar-
 | [17-unity-troubleshooting.md](17-unity-troubleshooting.md) | 【リファレンス】**Unity定番トラブル** — ピンクマテリアル / Missing Script / unitypackage×VPM二重導入 / アップロード失敗の切り分け |
 | [18-license-notes.md](18-license-notes.md) | 【リファレンス】**ライセンス実務メモ** — アバター規約の確認項目 / ツール・シェーダーのライセンス早見 / 受け渡しチェックリスト |
 
+※ 各ツールのバージョン履歴は `NN-*-changelog.md`（付録）に分離。通常の改変・デバッグでは読まなくてよい。
+
 ## 各ツールファイルの共通構成
 
 1. **概要** — 何をするツールか、Unity/VRCSDKバージョン要件

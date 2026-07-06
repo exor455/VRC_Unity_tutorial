@@ -25,7 +25,7 @@ READMEより(一次情報):
 | 相手 | 内容 |
 |---|---|
 | MA | メニュー統合自体は共存可。GoGo Locoのメニュー/パラメータ(16bit)をMA Parametersの容量計算に含めて設計する |
-| AAO | **AAO 1.8.0で「VRCStation由来BoxColliderのアニメーション削除がGoGo Loco等の飛行系アバターを壊す」問題が修正済み**([09](09-avatar-optimizer.md)バージョン履歴)。飛行・姿勢が壊れたらまずAAOのバージョン確認 |
+| AAO | **AAO 1.8.0で「VRCStation由来BoxColliderのアニメーション削除がGoGo Loco等の飛行系アバターを壊す」問題が修正済み**([09 バージョン履歴](09-avatar-optimizer-changelog.md))。飛行・姿勢が壊れたらまずAAOのバージョン確認 |
 | Quest/VQT | GoGo Loco自体はPC/Quest両対応(README)。VQT変換はFX系が主対象でBase/Action層の置き換えはそのまま通る |
 | MMDワールド | MMD処理はFXレイヤーの話なのでGoGo Locoとは概ね独立(MA側の対応に従う) |
 
