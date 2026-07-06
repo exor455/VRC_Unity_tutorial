@@ -94,6 +94,7 @@
     - `m_objects[i].MaterialIndex`(int: 対象マテリアルスロット番号)
   - `Object.targetObject`(GameObjectへのObjectReference)は **bake時には不要**。`referencePath` だけで動作する(MA Object Toggle の `targetObject` 必須ルールとは異なる)
   - エントリ追加は `arraySize` をインクリメントし `InsertArrayElementAtIndex` 後、`referencePath`・`Material`・`MaterialIndex` を設定して `ApplyModifiedProperties` を呼ぶ
+- **VRC AnimLayerType の enum 値(C# スクリプトで FX レイヤーを特定する際の注意, 実測 VRCSDK3)**: `VRCAvatarDescriptor.baseAnimationLayers` を SerializedObject で走査するとき、`type.intValue` の値は `Base=0, Additive=2, Gesture=3, Action=4, FX=5`。**`== 4` は FX ではなく Action に当たる**。FX レイヤーを特定したいなら `== 5` を使う。または C# API で `desc.baseAnimationLayers` を直接走査して `type == VRCAvatarDescriptor.AnimLayerType.FX` で絞り込み、その配列インデックスを求めてから `GetArrayElementAtIndex` でアクセスするのが確実。
 
 ### メニュー付きトグルの組み立て骨格
 
@@ -119,7 +120,8 @@
 **落とし穴 — 自動パラメータ割当の名前は `Control.name` ではなく GO 名から生成される(実測)**:
 `Control.parameter.name` を空にして自動割当にすると、生成される同期パラメータ名は `__MA/AutoParam/<GameObject名>$<hash>`(Bool)になり、**メニュー項目の表示名も GO 名が採用される**(`Control.name` ではない)。例: GO 名 = "ExampleToggle"・`Control.name` = "Example" のとき、パラメータ名・表示名ともに "ExampleToggle" になる。狙った表示名・パラメータ名にしたい場合は、GO 名をその名前に合わせるか `Control.parameter.name` を明示設定する。
 
-**MA Material Setter との組み合わせは最小構成(単一GO)が確実**: リアクティブコンポーネントとして `MA Material Setter` を使う場合、「定番構成(フォルダ=親子2階層)」の Menu Group 経由ではなく、`MA Menu Installer` + `MA Menu Item` + `MA Material Setter` を**1つのGOに集約した最小構成**を使う方が確実。NDMF Manual Bake で動作確認済み(実測: Unity 2022.3.22f1 / MA 1.17.1 / NDMF 1.14.0)。
+**定番構成(親子2階層)でも MA Material Setter を含む全リアクティブは動作する(実測: Unity 2022.3.22f1 / MA 1.17.1 / NDMF 1.14.0)**: 親GO に `MA Menu Installer` + `MA Menu Group`、子GO に `MA Menu Item`(Toggle) + `MA Material Setter` を置く2階層構成でも、単一GO平置き構成と**同一の FX 結線・自動パラメータ・メニュー項目が bake 生成される**。`MA Menu Group` はメニュー構造の「箱」にすぎず、リアクティブ(Material Setter / Object Toggle 等)は同一GO上の Menu Item と自動結線されるため、**メニューの入れ子とリアクティブ種別は独立。どの構成でもリアクティブは動作する**。
+過去に「2階層は動かない」と誤認した原因は Menu Group の制約ではなく次の2点: (a) `AvatarProcessor.ProcessAvatarUI()` に `Instantiate` した clone を渡して `(Clone)(Clone)` を生成し間違ったオブジェクトを検査した計測ミス、(b) FX に motion が null の State が含まれていた場合の bake 例外(後述の「NDMF Manual Bake §null motion State」参照)。
 
 ### メニュー編集のGUIショートカット(Create Toggle / Extract Menu)
 
@@ -183,6 +185,8 @@ Hierarchyで対象GOを右クリック → `GameObject/Modular Avatar/Create Tog
 
 **切り分け注意**: アバター固有の既存不良(例: PhysBone のコンポーネントリストに null エントリ)があると `PhysbonesBlockerPluginPass` で `ArgumentException` が出るが、これは検証対象のトグルとは無関係なことがある。エラーの発生タイミングと対象を確認して切り分ける。
 
+**null motion State による bake 例外の切り分け**: NDMF Manual Bake またはビルドが `VirtualClip.Commit` 系の例外で途中停止する場合、対象アバターの FX 等 AnimatorController に **motion が null の State**(制作者が表情差し替え用に残したプレースホルダー State 等)が含まれていることがある。切り分け手順: アバターの FX 等を一時的に空の AnimatorController に差し替えて bake が通るか確認する。通れば null motion State が原因。恒久対処は当該 State に空 AnimationClip を割り当てるか State を除去する。検証後は元コントローラを必ず復元すること。
+
 ## Quest対応時の注意
 
 - MA自体はQuestビルドでも同様に動作する(プラットフォーム非依存の変換)
@@ -215,6 +219,7 @@ Hierarchyで対象GOを右クリック → `GameObject/Modular Avatar/Create Tog
 - **「ボタン押しても消えない」「トグルが反応しない」**(ユーザー語彙): 自分にも効かない→Menu Itemのパラメータ名とリアクティブ/アニメの接続を確認(Setup Outfitやり直しが早い)。自分には効くが他人に見えない→上記synced/容量。問診は[19 §G](19-triage-guide.md)
 - **「スケールを変えても勝手に元に戻る」**(ユーザー語彙): そのオブジェクトにBone Proxyが付いていて**Match Scale ON**になっていないか確認。ONだとlocalScaleがボーンのスケールで上書きされ続ける。固定したいスケールがあるならMatch ScaleをOFFにしてから設定し直す
 - **スクリプトで書き換えたトグル対象がドメインリロード後に元に戻る**: `m_objects[i].Object.referencePath` を SerializedObject 経由で書き換えてもドメインリロード後に `targetObject`(GameObjectへのUnityネイティブ参照)からパスが再生成されて巻き戻る。`InsertArrayElementAtIndex` による複製は `targetObject` が複製元のままクローンされるため特に注意。`referencePath` と `targetObject`(objectReferenceValue)の**両方**を設定すること。同一ジョブ内の読み返しでは検証不十分で、ドメインリロード後の再ダンプで永続性を確認する。詳細は「改変時の注意点 §m_objects」参照。(実測: Unity 2022.3.22f1 / MA 1.17.1 / NDMF 1.14.0)
+- **NDMF Manual Bake またはビルドが途中で例外停止する(`VirtualClip.Commit` 等)**: 対象アバターの FX 等 AnimatorController に motion が null の State(制作者がプレースホルダーとして残したステート等)が含まれていることがある。一時的に空の AnimatorController に差し替えて bake が通るかで切り分け可能。通れば null motion が原因なので空クリップ割り当てか State 削除で対処。詳細手順は「NDMF Manual Bake §null motion State」参照。
 
 ## 関連ツール
 
