@@ -91,3 +91,57 @@ VRChatのモバイル制約の実装対象:
 ## バージョン履歴
 
 破壊的変更・修正版マッピングは [11-vrcquesttools-changelog.md](11-vrcquesttools-changelog.md) に分離。バージョン起因の不具合を切り分ける時だけ参照する。
+
+## スクリプト実行ノート(自動化用・VQT 2.11.7 / Unity 2022.3 実測)
+
+**手動GUI変換をスクリプトから呼ぶとハングする問題と回避策。** 通常の手動変換利用者には不要。スクリプト・エージェントからQuest変換を自動実行する場合のみ参照する。
+
+### GUIエントリポイントはヘッドレス環境で使えない
+
+`Tools/VRCQuestTools/Convert Avatar for Android` メニューの `OnClickConvertButton` は、対象アバターにUnity Constraintが含まれる場合に `EditorUtility.DisplayDialog` で確認ダイアログを表示する。ヘッドレス/バッチ実行環境(Unityをバッチモードで起動した場合や、AIBridgeのようなエディタ拡張から同期的に呼ぶ場合)ではこのダイアログがハングの原因になる。
+
+### 内部APIを直呼びしてダイアログを回避する
+
+スクリプトから変換する場合は、ダイアログを発生させない内部APIを直接呼ぶ(実測):
+
+```csharp
+// 1. 変換設定コンポーネントをアバターに追加
+//    AvatarDescriptor は AddComponent 時に自動設定される
+var settings = avatarGameObject.AddComponent<KRT.VRCQuestTools.Models.Unity.AvatarConverterSettings>();
+
+// 2. ProgressCallback(内部クラス)の空インスタンスを生成し、各デリゲートを NoOp で埋める
+//    ※ null を渡すと ConvertMaterialsForAndroid(AvatarConverter.cs 410行付近)で
+//      NullReferenceException が発生する(progressCallback?.onTextureProgress(...) ではなく
+//      直接呼びのため)
+var converterType = typeof(KRT.VRCQuestTools.VRCQuestTools).Assembly
+    .GetType("KRT.VRCQuestTools.AvatarConverter");
+var callbackType = converterType.GetNestedType(
+    "ProgressCallback", System.Reflection.BindingFlags.NonPublic);
+var callback = System.Activator.CreateInstance(callbackType, nonPublic: true);
+// 各デリゲートフィールド(onTextureProgress 等)を NoOp デリゲートで埋める
+foreach (var field in callbackType.GetFields(
+    System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic |
+    System.Reflection.BindingFlags.Public))
+{
+    if (typeof(System.Delegate).IsAssignableFrom(field.FieldType))
+    {
+        var noop = System.Delegate.CreateDelegate(
+            field.FieldType,
+            typeof(YourNoOpClass).GetMethod("NoOp", /* matching signature */));
+        field.SetValue(callback, noop);
+    }
+}
+
+// 3. 変換実行
+var componentRemover = /* ComponentRemover インスタンス */;
+var convertMethod = converterType.GetMethod("ConvertForQuest",
+    System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
+convertMethod.Invoke(null, new object[] {
+    settings, componentRemover, false, outputPath, callback
+});
+```
+
+**注意事項:**
+- 型名・メソッドシグネチャ・フィールド名はすべて `internal` であり、VQTのメジャー更新で変更される可能性がある。使用前にソース(`Editor/AvatarConverter.cs`)を確認すること
+- 変換後、`Selection.activeGameObject` がQuest複製のGameObjectを指す。複製の参照取得手段として利用できる(実測)
+- `Remove Avatar Dynamics` オプションはデフォルト無効(`removeAvatarDynamics=false`)。スクリプトから有効化する場合は `AvatarConverterSettings` の該当フィールドを設定する(実測)
