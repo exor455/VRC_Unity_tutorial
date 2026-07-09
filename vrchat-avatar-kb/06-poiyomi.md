@@ -12,7 +12,7 @@
 
 - Unity要件: package.jsonの表記は`2019.4`だが、**changelog上は9.2.43でUnity 2019サポートを終了**(2021.3/2022.3推奨)。マニフェストと実態に齟齬があり、実態(changelog)が正
 - VRCSDK: 不要(VRChat向け機能はVRCSDK検知で有効化)
-- 配布: VPM/unitypackage/GitHub。`legacyFolders: Assets\_PoiyomiShaders`(旧配置からの移行定義)
+- 配布: VPM(VPMリポジトリ: poiyomi.github.io/vpm)/unitypackage/GitHub。`legacyFolders: Assets\_PoiyomiShaders`(旧配置からの移行定義)
 
 ## 依存関係
 

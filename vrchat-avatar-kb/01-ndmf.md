@@ -2,7 +2,7 @@
 
 - リポジトリ: https://github.com/bdunderscore/ndmf
 - ドキュメント: https://ndmf.nadena.dev
-- パッケージ名: `nadena.dev.ndmf`
+- パッケージ名: `nadena.dev.ndmf`(VPMリポジトリ: vpm.nadena.dev)
 - 作者: bd_(Modular Avatarと同一作者)
 
 ## 概要

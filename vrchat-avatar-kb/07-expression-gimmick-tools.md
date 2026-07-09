@@ -21,6 +21,7 @@
 - リポジトリ: https://github.com/suzuryg/face-emo
 - ドキュメント: https://suzuryg.github.io/face-emo/
 - パッケージ名: `jp.suzuryg.face-emo` / 1.7.x(Unity 2022.3)
+- 導入(VPM): suzuryg.github.io/vpm-repos
 
 **表情作成・設定の統合ツール**(日本圏で最も普及した表情システムの一つ)。ハンドジェスチャーとExpression Menuを組み合わせた表情切り替えを、専用GUIで表情パターン(モード)単位に構築する。
 
@@ -32,6 +33,7 @@
 
 - リポジトリ: https://github.com/hai-vr/combo-gesture-expressions-av3
 - ドキュメント: https://docs.hai-vr.dev/docs/products/combo-gesture-expressions
+- 導入(VPM): hai-vr.github.io/vpm-listing
 
 英語圏定番の表情ツール。ジェスチャー組み合わせに表情を割り当てるのに加え、**Contacts / PhysBones / OSC / コントローラートリガー圧**で表情をブレンドできるのが特徴。
 
@@ -45,6 +47,7 @@
 - ドキュメント: https://azukimochi.github.io/LLC-Docs/
 - パッケージ名: `io.github.azukimochi.light-limit-changer` / 1.14.x
 - NDMFプラグインID: `io.github.azukimochi.light-limit-changer`
+- 導入(VPM): azukimochi.github.io/vpm-repos
 
 **シェーダーの明るさ下限/上限を操作するアニメーションとメニューを自動生成**するツール。ワールドの照明が暗すぎる/明るすぎる場合にユーザー自身がメニューで調整できるようにする、日本圏でほぼ標準装備のギミック。
 
@@ -58,6 +61,7 @@
 - リポジトリ: https://github.com/Narazaka/FloorAdjuster
 - パッケージ名: `net.narazaka.vrchat.floor-adjuster`
 - NDMFプラグインID: `net.narazaka.vrchat.floor_adjuster`
+- 導入(VPM): vpm.narazaka.net
 
 **アバターの上下位置(接地)を非破壊に調整**するツール。ヒール靴などで浮く/沈むアバターの定番修正手段。MA互換。現行は「by skeleton(新方式)」セットアップが推奨。
 
@@ -68,6 +72,7 @@
 
 - リポジトリ: https://github.com/VRLabs/Avatars-3.0-Manager
 - パッケージ名: `dev.vrlabs.av3manager`
+- 導入(VPM): VCC Curated(VCC同梱リスト、独自リポジトリ追加不要)
 
 **Playable Layerとパラメータを手動マージ**する老舗ツール。「FXレイヤーに別のコントローラーの中身を統合する」「パラメータをコピーする」操作をGUIで行う。
 

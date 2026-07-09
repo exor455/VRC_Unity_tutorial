@@ -16,6 +16,7 @@
 
 - リポジトリ: https://github.com/llealloo/audiolink(VPM配布)
 - 現行: 2.x(2.0.0は2024-09)
+- 導入(VPM): VCC Curated(VCC同梱リスト、独自リポジトリ追加不要)
 
 **ワールド内の音声を解析し、周波数帯ごとのリアクティブデータをシェーダー/Udonに公開する**システム。データはグローバルな`_AudioTexture`として全アバターのシェーダーから参照できる。
 
@@ -39,6 +40,7 @@
 
 - リポジトリ: https://github.com/REDSIM/VRCLightVolumes
 - 作者: REDSIM
+- 導入(VPM): redsim.github.io/vpmlisting
 
 **ボクセルベースのLight Probes代替**。ワールドのベイク照明を高品質・軽量にアバターへ適用する次世代ライティング。2025年以降、対応ワールド・対応シェーダーが急速に普及した。
 

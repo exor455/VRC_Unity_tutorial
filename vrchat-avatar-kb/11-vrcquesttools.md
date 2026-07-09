@@ -2,7 +2,7 @@
 
 - リポジトリ: https://github.com/kurotu/VRCQuestTools
 - ドキュメント: https://kurotu.github.io/VRCQuestTools/
-- パッケージ名: `com.github.kurotu.vrc-quest-tools`
+- パッケージ名: `com.github.kurotu.vrc-quest-tools`(VPMリポジトリ: kurotu.github.io/vpm-repos)
 - 作者: kurotu
 
 ## 概要

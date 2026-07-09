@@ -52,7 +52,7 @@ Modular Avatarでアバターメニューを構成するための補助ツール
 
 - リポジトリ: https://github.com/lilxyzw/lilycalInventory
 - ドキュメント: https://lilxyzw.github.io/lilycalInventory/
-- パッケージ名: `jp.lilxyzw.lilycalinventory`
+- パッケージ名: `jp.lilxyzw.lilycalinventory`(VPMリポジトリ: lilxyzw.github.io/vpm-repos)
 - NDMFプラグインID: `jp.lilxyzw.lilycalinventory`(TTT/VQTの順序制約に登場)
 
 ### 概要

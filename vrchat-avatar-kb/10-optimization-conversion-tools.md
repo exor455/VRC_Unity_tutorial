@@ -32,6 +32,7 @@
 - リポジトリ: https://github.com/RamType0/Meshia.MeshSimplification
 - パッケージ名: `com.ramtype0.meshia.mesh-simplification` / 3.x(Unity 2022.3)
 - NDMFプラグインID: `Meshia.MeshSimplification.Ndmf.Editor.NdmfPlugin`
+- 導入(VPM): ramtype0.github.io/Meshia.MeshSimplification
 
 **Burst/Job System実装の高速・非同期メッシュ簡略化**ツール/ライブラリ。エディタでもランタイムでも実行可能で、NDMF統合コンポーネントによる非破壊削減が改変用途の主線。**lilNDMFMeshSimplifierの公式後継**(lil側READMEが移行を明示)。
 
@@ -43,6 +44,7 @@
 
 - リポジトリ: https://github.com/lilxyzw/lilNDMFMeshSimplifier
 - NDMFプラグインID: `jp.lilxyzw.ndmfmeshsimplifier.NDMF.NDMFPlugin`
+- 導入(VPM): lilxyzw.github.io/vpm-repos
 
 UnityMeshSimplifierをNDMFプラグイン化したもの。quality値(例: 0.5で約半分のポリゴン)を設定するだけの簡易操作。**プロジェクトは終了済みで、READMEがMeshia Mesh Simplificationへの移行を明示**。既存アバターで見かけた場合の知識として記録(TTT/VQTの順序制約リストには互換のため残っている)。
 
@@ -66,6 +68,7 @@ Asset Storeの**有償ポリゴン削減アセット「Mantis LOD Editor Profess
 ## lilMaterialConverter(lilxyzw)
 
 - リポジトリ: https://github.com/lilxyzw/lilMaterialConverter
+- 導入(VPM): lilxyzw.github.io/vpm-repos
 
 マテリアルを右クリック→`lilToon/Convert material to lilToon`で**他シェーダーのマテリアルをlilToonへ変換**するツール。対応表(README)は現状 **Unity-Chan Toon Shader 2.0(UTS2)→lilToon**。
 
