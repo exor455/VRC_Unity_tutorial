@@ -145,3 +145,11 @@ convertMethod.Invoke(null, new object[] {
 - 型名・メソッドシグネチャ・フィールド名はすべて `internal` であり、VQTのメジャー更新で変更される可能性がある。使用前にソース(`Editor/AvatarConverter.cs`)を確認すること
 - 変換後、`Selection.activeGameObject` がQuest複製のGameObjectを指す。複製の参照取得手段として利用できる(実測)
 - `Remove Avatar Dynamics` オプションはデフォルト無効(`removeAvatarDynamics=false`)。スクリプトから有効化する場合は `AvatarConverterSettings` の該当フィールドを設定する(実測)
+
+### AAO適用済みアバターへの変換も成立する(実測)
+
+- 実測環境: VQT 2.11.7 / AAO 1.9.15 / MA 1.17.1 / NDMF 1.14.0(2026-07-10)
+- AAO Trace And Optimize 込みでNDMF Manual Bakeした複製(実測でBlendShape 253→51、GameObject 238→199に削減済みの状態)に対して、上記 `ConvertForQuest` 直呼びがそのまま成立する
+- 結果: 全マテリアル `VRChat/Mobile/Toon Lit` 化、`ConvertedAvatar` 付与、**AAOの最適化結果(削減済みBlendShape/GameObject数)は保持**、変換元・大元とも無変更
+- つまり、公式協調の順序(VQT変換→AAO→VQT形式チェック、NDMFビルド内で自動)に加えて、「先にAAOを適用(bake)した状態からの手動Quest変換」という逆順ワークフローも選択できる
+- 注意: 変換中のログに `IndexOutOfRangeException` が複数記録されるが、出力(マテリアル変換・コンポーネント除去)への実害は観測されていない。発生箇所は未特定
