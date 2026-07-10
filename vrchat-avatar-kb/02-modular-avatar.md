@@ -138,6 +138,18 @@ fi.SetValue(binding.ReferenceMesh, bodyGameObject);
 
 衣装側に素体と対応する BlendShape が無い場合、`Mesh.AddBlendShapeFrame` でメッシュコピーに同名 BS を生成してから同期させる手が使える。元 FBX メッシュは直接変更せず `Object.Instantiate` したコピーに追加して `sharedMesh` を差し替える。既存 BS は読み出して再追加で保全する。
 
+#### ブレンドシェイプの命名規則と互換性
+
+**セパレータ(区切り)専用ブレンドシェイプが存在する(実測)**: BlendShape をインデックス直指定・前方一致・全件走査で一括操作すると、変形を持たない「区切り行」用 BS を巻き込み事故ることがある。実例: ルルネ(IKUSIA製、実測 2026-07-10、Unity 2022.3.22f1)の Body メッシュには `─────VRC─────`、Body_b メッシュには `==Breast_____胸======================` のような区切り専用 BS が存在。これらは **weight キー・フレームなし**で、変形は起きない。インデックスで範囲一括操作や「名前に含む」前方一致で拾うと、戻し忘れの原因になる。
+
+**対策**: ブレンドシェイプは**名前の完全一致**で引くこと。改変前に各 SkinnedMeshRenderer の `blendShapeName` 一覧をダンプし、命名規則(区切り行の有無・日英混在)を確認するのが安全。スクリプト操作時は `mesh.GetBlendShapeName(index)` 全件ダンプ → テキスト検索が最も確実。
+
+#### 素体間の BS 命名互換性問題
+
+**素体間でブレンドシェイプ命名は非互換(実測)**: MA Blendshape Sync 等で「同名 BS が同期元/先にある」前提の手順は、素体を跨ぐ衣装流用では成立しないことが多い。実例: まめひなた(例: Waist_slim 等の英語名)とルルネ(例: Breast_small_____胸_小 のようにアンダースコア5連+日本語サフィックス)で命名体系が完全に別。ルルネの underwear には `Retarget_Body_b_...` というリターゲットツール痕跡のプレフィックス BS も存在。
+
+**対策**: 同期元 BS 名と同期先 BS 名(LocalBlendshape)を必ず個別に指定すること。事前に両 SkinnedMeshRenderer の BS 一覧を突き合わせて対応表を作る。MA Blendshape Sync の `LocalBlendshape` フィールドは同期先の実際の BS 名を明示できるため、名前が違ってもこのフィールドで引き直せば同期は成立する。
+
 ### メニュー付きトグルの組み立て骨格
 
 `MA Menu Installer` / `MA Menu Item` / `MA Menu Group` / `MA Object Toggle` の存在は「対応する改変パターン」に列挙されているが、それらをどう配置するとメニュー付きトグルが成立するかの骨格は別途示す必要がある。以下2パターンを示す(実測: Unity 2022.3.22f1 / MA 1.17.1 / NDMF 1.14.0、NDMF Manual Bakeで動作確認)。
@@ -266,6 +278,8 @@ Hierarchyで対象GOを右クリック → `GameObject/Modular Avatar/Create Tog
 - **NDMF Manual Bake またはビルドが途中で例外停止する(`VirtualClip.Commit` 等)**: 対象アバターの FX 等 AnimatorController に motion が null の State(制作者がプレースホルダーとして残したステート等)が含まれていることがある。一時的に空の AnimatorController に差し替えて bake が通るかで切り分け可能。通れば null motion が原因なので空クリップ割り当てか State 削除で対処。詳細手順は「NDMF Manual Bake §null motion State」参照。
 - **スクリプトで Blendshape Sync を設定したが同期先 weight が 0 のまま**: 同一フレーム(同一ジョブ)内では同期が発動しない仕様。次のジョブ実行(ドメインリロード後)で追従しているかを確認する。NDMF Manual Bake は不要。詳細は「MA Blendshape Sync スクリプト設定ノート §同期反映タイミング」参照。(実測: Unity 2022.3.22f1 / MA 1.17.1 / NDMF 1.14.0)
 - **スクリプトで `AvatarObjectReference.targetObject` に直接代入しようとした**: CS1061 コンパイルエラーになる。`targetObject` は private フィールドのため Reflection で設定する。`referencePath`(public string)だけでは足りず両方の設定が必要。詳細は「MA Blendshape Sync スクリプト設定ノート §AvatarObjectReference.targetObject は private」参照。
+- **ブレンドシェイプを一括操作したが何か壊れた/思わぬメッシュが変形した**: インデックス直指定・前方一致・全件走査で「区切り行」専用 BS を巻き込んだ可能性。ブレンドシェイプの命名規則を確認し、完全一致で引く、または変形キーフレーム有無で事前フィルタする。詳細は「MA Blendshape Sync スクリプト設定ノート §ブレンドシェイプの命名規則と互換性」参照。
+- **衣装を別素体のアバターに着せたが表情が反応しない(MA Blendshape Sync無反応)**: 素体間で BS 命名が互換でない可能性。両素体の BlendShape 一覧を突き合わせ、同期元と同期先のBS名が実際に一致するか確認する。名前が違う場合は Blendshape Sync の `LocalBlendshape` フィールドで同期先の実際の BS 名を明示指定する。詳細は「MA Blendshape Sync スクリプト設定ノート §素体間の BS 命名互換性問題」参照。
 
 ## 関連ツール
 
