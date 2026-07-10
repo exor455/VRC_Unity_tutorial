@@ -44,6 +44,7 @@ https://raw.githubusercontent.com/exor455/VRC_Unity_tutorial/main/vrchat-avatar-
 | [16-world-integrations.md](16-world-integrations.md) | 【リファレンス】**ワールド連携** — AudioLink / LTCGI / VRC Light Volumes とシェーダー対応バージョン |
 | [17-unity-troubleshooting.md](17-unity-troubleshooting.md) | 【リファレンス】**Unity定番トラブル** — ピンクマテリアル / Missing Script / unitypackage×VPM二重導入 / アップロード失敗の切り分け |
 | [18-license-notes.md](18-license-notes.md) | 【リファレンス】**ライセンス実務メモ** — アバター規約の確認項目 / ツール・シェーダーのライセンス早見 / 受け渡しチェックリスト |
+| [20-avatar-differences.md](20-avatar-differences.md) | 【リファレンス】**素体差** — アバター製品ごとの設計差(BS命名の類型・セパレータBS・衣装スロットの部位シグネチャ判定)と改変前の調査手順 |
 
 ※ 各ツールのバージョン履歴は `NN-*-changelog.md`（付録）に分離。通常の改変・デバッグでは読まなくてよい。
 
@@ -78,6 +79,7 @@ https://raw.githubusercontent.com/exor455/VRC_Unity_tutorial/main/vrchat-avatar-
 - 「ポリゴン削減」「シェーダー統一」「軽量化の進め方」→ 10-optimization-conversion-tools.md
 - 「表情システムを作る」「明るさ調整メニュー」「接地調整」→ 07-expression-gimmick-tools.md
 - 「非対応衣装を着せたい」「貫通を直したい」→ 03-fitting-tools.md
+- 「衣装を別素体に流用したい」「素体ごとにBS名が違う」「BS一括操作で事故った」→ 20-avatar-differences.md
 - 「ランクの基準値」「パラメータ何bit」「サイズ制限」「フォールバック」→ 13-vrchat-avatars-basics.md
 - 「VRCFury入りのアセット/アバターを扱う」→ 14-vrcfury.md
 - 「移動システム」「飛行」「座りポーズ」→ 15-gogo-loco.md

@@ -18,6 +18,10 @@ Avatars 3.0のアバターは複数のAnimator Controllerを層として持つ:
 - FX以外のレイヤーではマテリアル等の見た目プロパティを動かさないのが原則(FXはヒューマノイドボーンを動かさない)
 - MMDワールドはFXレイヤー1〜2を無効化して独自表情を流す→MAのMMD対応([02](02-modular-avatar.md))の背景
 
+### スクリプトから FX レイヤーを特定する際の注意(AnimLayerType の enum 値、実測 VRCSDK3)
+
+`VRCAvatarDescriptor.baseAnimationLayers` を SerializedObject で走査するとき、`type.intValue` の値は `Base=0, Additive=2, Gesture=3, Action=4, FX=5`。**`== 4` は FX ではなく Action に当たる**。FX レイヤーを特定したいなら `== 5` を使う。または C# API で `desc.baseAnimationLayers` を直接走査して `type == VRCAvatarDescriptor.AnimLayerType.FX` で絞り込み、その配列インデックスを求めてから `GetArrayElementAtIndex` でアクセスするのが確実。
+
 ## まばたき・視線(VRC Avatar Descriptor)
 
 まばたき(自動瞬き)と視線は**FXではなくVRC Avatar DescriptorのEye Look / Eyelids設定**で動く:
