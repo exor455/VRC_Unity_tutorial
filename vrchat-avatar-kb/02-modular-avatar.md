@@ -150,6 +150,26 @@ fi.SetValue(binding.ReferenceMesh, bodyGameObject);
 
 **対策**: 同期元 BS 名と同期先 BS 名(LocalBlendshape)を必ず個別に指定すること。事前に両 SkinnedMeshRenderer の BS 一覧を突き合わせて対応表を作る。MA Blendshape Sync の `LocalBlendshape` フィールドは同期先の実際の BS 名を明示できるため、名前が違ってもこのフィールドで引き直せば同期は成立する。
 
+#### 補強: 素体設計の分類と対応戦略
+
+BS 互換性は**素体の設計思想に依存**し、一律「非互換」ではない。実測に基づく分類:
+
+**同名前提の設計** (ミルティナ / DOLOSart製、2026-07-10実測):
+- 衣装の各メッシュ(apron/bra/dress/neck_ribbon等)に**体側と同名の `Breasts_Flat/Small/Big/Cow` ブレンドシェイプを体系的に配置**
+- オプション変形は `Option_*` プレフィックスで統一
+- BlendshapeSyncが同名前提で成立する設計
+- 衣装変種(FC_Milltina)はBS構成・BS数が通常版と完全同一で差はベースメッシュ形状のみ。判別はプレハブ名・GO名で行う(BS構成では不可能)
+
+**独自命名の設計** (ルルネ / IKUSIA、既出):
+- 日英混在・アンダースコア連発で同名前提が成立しない
+- リターゲットツール痕跡(`Retarget_*` プレフィックス)が残存
+- 各メッシュのBS構成も不統一
+
+**改変前の判定手順**:
+1. 改変対象の衣装・アバター各SMRのBS名一覧をダンプ
+2. (a)同名が大多数なら→同名前提のBlendshapeSyncをそのまま張る
+   (b)独自命名・混在なら→対応表を作ってLocalBlendshapeを明示する
+
 ### メニュー付きトグルの組み立て骨格
 
 `MA Menu Installer` / `MA Menu Item` / `MA Menu Group` / `MA Object Toggle` の存在は「対応する改変パターン」に列挙されているが、それらをどう配置するとメニュー付きトグルが成立するかの骨格は別途示す必要がある。以下2パターンを示す(実測: Unity 2022.3.22f1 / MA 1.17.1 / NDMF 1.14.0、NDMF Manual Bakeで動作確認)。
