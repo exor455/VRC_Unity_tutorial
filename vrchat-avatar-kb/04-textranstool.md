@@ -53,6 +53,33 @@
 - 非正方形テクスチャのPadding計算はv0.10.0で修正
 - v1.0.0でv0.8.x以前のセーブデータを完全削除。**古いprefab/シーンはv0.9〜v0.10経由でマイグレーションしてから**v1.0へ
 
+## スクリプト実行ノート(自動化用・TTT 1.0.2 / Unity 2022.3 実測)
+
+エディタスクリプトからTTTを含むNDMFビルド(Manual Bake相当)を行う場合の実測知見。
+
+### TTT初期化を明示的に呼ぶ(必須)
+
+- 症状: スクリプトから `AvatarProcessor` でbakeすると、TTTのパスで `TextureManager.CopyGunmanSettingTexture2D` → `CopyFromGammaTexture2D.SetTexture` が `NullReferenceException` になり、デカール等が適用されない(bake自体は完走し、NREはログに出るだけのため見落としやすい)
+- 原因: `[TexTransInitialize]` 系の初期化(ComputeShader確保)は `[InitializeOnLoadMethod]` の delayCall 経由で走る。エディタのフレームループ外(外部からのコード実行等)ではdelayCallが未実行で、ComputeShaderがnullのまま
+- 解決: bake前に `TTTInitializeCaller.Initialize()`(public static)をリフレクションで明示的に呼ぶ:
+
+```csharp
+Type t = AppDomain.CurrentDomain.GetAssemblies()
+    .SelectMany(a => a.GetTypes())
+    .FirstOrDefault(x => x.Name == "TTTInitializeCaller");
+t?.GetMethod("Initialize", BindingFlags.Public | BindingFlags.Static)?.Invoke(null, null);
+```
+
+- 適用成否の判定は「ビルド生成物のテクスチャが元と別インスタンスになっているか」で行うと確実
+
+### SimpleDecal の serialized フィールド構造(スクリプト設定用)
+
+- `RendererSelector.Mode` = `Manual`(enumIndex=1)、`ManualSelections[0]` に対象Renderer
+- `DecalTexture` = Texture2D(非圧縮RGB24で可)
+- `TargetPropertyName._propertyName` = `"_MainTex"`、`_useCustomProperty` = true
+- `BackCulling` = 裏面カリングの要否
+- 投影はコンポーネントを載せたGameObjectのforward方向。localScaleのXYが投影範囲、Zが深度
+
 ## Quest対応時の注意
 
 - TTT自体はAndroid/iOSビルドで動作する(v0.8.0でAndroidコンパイルエラー修正、v1.0.1でiOSのフォーマット自動選択修正)
