@@ -96,6 +96,48 @@
   - エントリ追加は `arraySize` をインクリメントし `InsertArrayElementAtIndex` 後、`referencePath`・`Material`・`MaterialIndex` を設定して `ApplyModifiedProperties` を呼ぶ
 - **VRC AnimLayerType の enum 値(C# スクリプトで FX レイヤーを特定する際の注意, 実測 VRCSDK3)**: `VRCAvatarDescriptor.baseAnimationLayers` を SerializedObject で走査するとき、`type.intValue` の値は `Base=0, Additive=2, Gesture=3, Action=4, FX=5`。**`== 4` は FX ではなく Action に当たる**。FX レイヤーを特定したいなら `== 5` を使う。または C# API で `desc.baseAnimationLayers` を直接走査して `type == VRCAvatarDescriptor.AnimLayerType.FX` で絞り込み、その配列インデックスを求めてから `GetArrayElementAtIndex` でアクセスするのが確実。
 
+### MA Blendshape Sync スクリプト設定ノート
+
+エディタ C# から `ModularAvatarBlendshapeSync` を設定する際の実測知見(Unity 2022.3.22f1 / MA 1.17.1 / NDMF 1.14.0、まめひなたで検証)。
+
+#### Bindings のフィールド構造
+
+`BlendshapeBinding` の各フィールドは以下の通り(いずれも public):
+
+| フィールド | 型 | 内容 |
+|---|---|---|
+| `ReferenceMesh` | `AvatarObjectReference` | 同期元メッシュを持つ GameObject |
+| `Blendshape` | string | 同期元(素体)の BlendShape 名 |
+| `LocalBlendshape` | string | 同期先(衣装)の BlendShape 名 |
+
+コンポーネント側の `Bindings`(`List<BlendshapeBinding>`)も public で直接追加可能。
+
+#### AvatarObjectReference.targetObject は private — Reflection で設定する(実測)
+
+`AvatarObjectReference.referencePath`(string)は public で直接代入できる。しかし `targetObject`(GameObject)は **private フィールド**であり、直接アクセスは CS1061 コンパイルエラーになる。
+
+解決: Reflection を使う。
+
+```csharp
+var fi = typeof(AvatarObjectReference).GetField("targetObject",
+    BindingFlags.NonPublic | BindingFlags.Instance);
+fi.SetValue(binding.ReferenceMesh, bodyGameObject);
+```
+
+`referencePath` と `targetObject` の**両方**を設定すること。`referencePath` のみだとドメインリロード後に `targetObject` 側から再生成されて巻き戻る事故がある(MA Object Toggle の `m_objects` における既知挙動と同根。詳細は「改変時の注意点 §m_objects」参照)。
+
+#### 同期反映タイミング — 同一フレーム内では同期先 weight は更新されない(実測)
+
+`ModularAvatarBlendshapeSync` を AddComponent して Bindings を設定し、同期元(素体)の BlendShape weight を `SetBlendShapeWeight(100)` で変更しても、**同一フレーム(同一スクリプト実行)内では同期先(衣装)の weight は 0 のまま**になる。
+
+- 実測: 次のジョブ実行時(ドメインリロード後)には同期先が 100 に追従していた。NDMF Manual Bake は不要。
+- 解釈: 同期はMAのエディタ側処理で行われ、スクリプトから値を設定した同一フレーム内では発動しない。「設定直後に読み戻して 0 だから壊れている」と誤判定しないこと。
+- GUI操作(Inspector のスライダー)では即時追従して見えるため、この罠は**スクリプト自動化時のみ顕在化する**。
+
+#### 衣装に対応 BlendShape が無い場合の対処
+
+衣装側に素体と対応する BlendShape が無い場合、`Mesh.AddBlendShapeFrame` でメッシュコピーに同名 BS を生成してから同期させる手が使える。元 FBX メッシュは直接変更せず `Object.Instantiate` したコピーに追加して `sharedMesh` を差し替える。既存 BS は読み出して再追加で保全する。
+
 ### メニュー付きトグルの組み立て骨格
 
 `MA Menu Installer` / `MA Menu Item` / `MA Menu Group` / `MA Object Toggle` の存在は「対応する改変パターン」に列挙されているが、それらをどう配置するとメニュー付きトグルが成立するかの骨格は別途示す必要がある。以下2パターンを示す(実測: Unity 2022.3.22f1 / MA 1.17.1 / NDMF 1.14.0、NDMF Manual Bakeで動作確認)。
@@ -222,6 +264,8 @@ Hierarchyで対象GOを右クリック → `GameObject/Modular Avatar/Create Tog
 - **「スケールを変えても勝手に元に戻る」**(ユーザー語彙): そのオブジェクトにBone Proxyが付いていて**Match Scale ON**になっていないか確認。ONだとlocalScaleがボーンのスケールで上書きされ続ける。固定したいスケールがあるならMatch ScaleをOFFにしてから設定し直す
 - **スクリプトで書き換えたトグル対象がドメインリロード後に元に戻る**: `m_objects[i].Object.referencePath` を SerializedObject 経由で書き換えてもドメインリロード後に `targetObject`(GameObjectへのUnityネイティブ参照)からパスが再生成されて巻き戻る。`InsertArrayElementAtIndex` による複製は `targetObject` が複製元のままクローンされるため特に注意。`referencePath` と `targetObject`(objectReferenceValue)の**両方**を設定すること。同一ジョブ内の読み返しでは検証不十分で、ドメインリロード後の再ダンプで永続性を確認する。詳細は「改変時の注意点 §m_objects」参照。(実測: Unity 2022.3.22f1 / MA 1.17.1 / NDMF 1.14.0)
 - **NDMF Manual Bake またはビルドが途中で例外停止する(`VirtualClip.Commit` 等)**: 対象アバターの FX 等 AnimatorController に motion が null の State(制作者がプレースホルダーとして残したステート等)が含まれていることがある。一時的に空の AnimatorController に差し替えて bake が通るかで切り分け可能。通れば null motion が原因なので空クリップ割り当てか State 削除で対処。詳細手順は「NDMF Manual Bake §null motion State」参照。
+- **スクリプトで Blendshape Sync を設定したが同期先 weight が 0 のまま**: 同一フレーム(同一ジョブ)内では同期が発動しない仕様。次のジョブ実行(ドメインリロード後)で追従しているかを確認する。NDMF Manual Bake は不要。詳細は「MA Blendshape Sync スクリプト設定ノート §同期反映タイミング」参照。(実測: Unity 2022.3.22f1 / MA 1.17.1 / NDMF 1.14.0)
+- **スクリプトで `AvatarObjectReference.targetObject` に直接代入しようとした**: CS1061 コンパイルエラーになる。`targetObject` は private フィールドのため Reflection で設定する。`referencePath`(public string)だけでは足りず両方の設定が必要。詳細は「MA Blendshape Sync スクリプト設定ノート §AvatarObjectReference.targetObject は private」参照。
 
 ## 関連ツール
 
