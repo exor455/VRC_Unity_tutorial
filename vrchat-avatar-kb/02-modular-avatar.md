@@ -147,7 +147,9 @@ fi.SetValue(binding.ReferenceMesh, bodyGameObject);
 
 **最小構成(単一GO平置き)**: 1つの空GOに `MA Menu Installer` + `MA Menu Item`(type=Toggle) + `MA Object Toggle` を載せる。Menu Installer の `installTargetMenu = null` でアバタールートの Expressions メニューへ直接挿入される。同一GO上の Menu Item(Toggle)と Object Toggle が**自動結線・自動パラメータ割当**される。単発トグルはこれで足りる。Bakeで「ルートメニュー項目 + 自動 Bool パラメータ + FX の activeSelf 切替結線」が生成されることを確認。
 
-**定番構成(フォルダ=親子2階層)**: 親GOに `MA Menu Installer` + `MA Menu Group`、子GO群に各 `MA Menu Item`(Toggle) + リアクティブコンポーネント(オブジェクトON/OFFなら `MA Object Toggle`、マテリアル切替なら `MA Material Setter` 等、用途で差し替え)を載せる。`MA Menu Group` が「子オブジェクト群=メニュー項目」を成立させる箱の役割を担い、メニュー上でフォルダにまとまる。日本圏で最もよく使われる形。
+**定番構成(Menu Group版・複数項目の平置き束ね)**: 親GOに `MA Menu Installer` + `MA Menu Group`、子GO群に各 `MA Menu Item`(Toggle) + リアクティブコンポーネント(オブジェクトON/OFFなら `MA Object Toggle`、マテリアル切替なら `MA Material Setter` 等、用途で差し替え)を載せる。`MA Menu Group` は複数の `MA Menu Item` を**一括インストール(同時にゲーム内メニューへ挿入)する束ね**に過ぎず、ゲーム内メニューにフォルダ(SubMenu階層)を作らない。子項目は**ルートメニューに平置き展開**される。複数トグルを単純に列挙したいときの定番構成。
+
+**フォルダ階層を作る場合(SubMenu + Children source)**: ゲーム内メニューに階層(root > フォルダ > 子トグル)を作りたい場合、親GO に **`MA Menu Installer`** + **`MA Menu Item`(Control.type=SubMenu、MenuSource=`SubmenuSource.Children`)** を載せ、その子に各トグル項目(`MA Menu Item`(Toggle) + リアクティブ)を置く。この構成で bake 生成時に期待通り SubMenu 階層が作られ、さらに同じく `source=Children` の孫レベル SubMenu も多段ネストが成立することを実測確認済み(Unity 2022.3.22f1 / MA 1.17.1 / NDMF 1.14.0、NDMF Manual Bake で検証済み)。Menu Group ではなく Menu Item(SubMenu) + Children source の組み合わせで、フォルダ入れ子は自動生成される。
 
 **Menu Item の主なシリアライズフィールド(スクリプト操作時の参考)**:
 
@@ -199,6 +201,24 @@ Hierarchyで対象GOを右クリック → `GameObject/Modular Avatar/Create Tog
 展開時に**アバターの `VRCAvatarDescriptor.expressionsMenu` を空のプレースホルダーアセット(元アセット名 + " placeholder.asset")に差し替える**。元のメニューアセット自体は削除されないが、アバターからの参照が外れ、以後メニューはMAオブジェクト側が単一の正になる。VRCSDKがパラメータ定義時にメニューアセットの存在を要求するためダミーを噛ませる仕様。元アセットが Packages 配下の場合プレースホルダーは Assets ルートに作られる。**元に戻すには `expressionsMenu` を元アセットに指し直す。**
 
 **用途**: 既存アバターのメニュー構成をMAの非破壊オブジェクト編集へ載せ替えて再編するときに使う破壊的操作。
+
+### 排他トグル(ラジオ式・衣装切替)の最小構成
+
+複数の `MA Menu Item`(Toggle)に**同一のパラメータ名を明示設定**し、`automaticValue=true` にすると、bake時にMAがそのパラメータを **Int(defaultValue=0, synced)** としてExpression Parametersに自動登録し、各項目のvalue に**宣言順で 1..N を自動割当**します。
+
+VRCメニュー仕様(同一パラメータのToggle群)により排他=ラジオ動作になります。**MA Parametersコンポーネントは不要です**(実測)。
+
+各項目に `MA Object Toggle` で「自分の衣装GO=ON、他の選択肢の衣装GO=OFF」を書けば排他衣装切替が完成します。
+
+既定値 0 = どれも未選択で、シーンの初期表示状態がそのまま使われます。**関連制約**: Int自動パラメータ値が 0-255 を超えるとビルドエラー(MA 1.18+)。選択肢数の実務上限に関わります。
+
+**実測環境による検証結果(bake生成メニュー/パラメータ dump)**:
+```
+params [AIDiag_Wardrobe type=Int def=0 synced=True]
+menu [AIDiag_Item0 Toggle param=AIDiag_Wardrobe value=1] [Item1 value=2] [Item2 value=3]
+```
+
+実測: Unity 2022.3.22f1 / MA 1.17.1 / NDMF 1.14.0 / VRCSDK3、2026-07-11、まめひなた(Mamehinata_PC)
 
 ### 衣装トグルのOFFリスト構築(参照)
 

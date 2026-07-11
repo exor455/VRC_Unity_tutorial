@@ -65,6 +65,7 @@ NDMF自体はフレームワークであり直接の改変機能はほぼ無い�
 - **アバター固有の既存不良との切り分け**: 対象アバター固有の不良(例: PhysBone のコンポーネントリストに null エントリ)があると `PhysbonesBlockerPluginPass` で `ArgumentException` が出るが、検証対象とは無関係なことがある。エラーの発生タイミングと対象を確認して切り分ける
 - **null motion State による bake 例外**: Manual Bake またはビルドが `VirtualClip.Commit` 系の例外で途中停止する場合、対象アバターの FX 等 AnimatorController に **motion が null の State**(制作者が表情差し替え用に残したプレースホルダー State 等)が含まれていることがある。切り分け手順: FX 等を一時的に空の AnimatorController に差し替えて bake が通るか確認する。通れば null motion State が原因。恒久対処は当該 State に空 AnimationClip を割り当てるか State を除去する。検証後は元コントローラを必ず復元すること
 - **AAO 等 Optimizing フェーズのツールがある環境での追加観察**: FX コントローラだけを空換装しても、同じ `ArgumentException`(`PhysbonesBlockerPluginPass`→`VirtualClip.Commit`)で bake が止まることが観測されている(観測: MA 1.17.1 / NDMF 1.14.0 / AAO 1.9.15)。他のアニメーションレイヤー(Gesture / Action 等)にも null motion State が含まれている可能性がある(root cause は完全特定していない)。検証 bake を通したいときは FX だけでなく**全アニメーションレイヤーの中身**を疑う。この状態で得た bake 生成物は不完全であり、最適化数値の計測には使えない
+- **直前のbakeジョブ直後の一過性例外**: スクリプトからManual bakeを連続実行する場合、直前のbakeジョブ直後の実行で `ArgumentException: Object at index 0 is null`(PhysbonesBlockerPluginPass表示)が**一過性に**出ることがあります。同一構成の再実行で成功した場合(実測)、構成起因と決めつけず、まず再実行で切り分けてください。実測: Unity 2022.3.22f1 / NDMF 1.14.0 / MA 1.17.1 / VRCSDK3、まめひなた、2026-07-11。複数ジョブの連続bake時に1回目のbakeジョブ直後の2回目で発生。同じコードの2回目実行で成功。根本原因は切り分け途上。
 
 ## Quest対応時の注意
 
