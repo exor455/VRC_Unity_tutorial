@@ -28,6 +28,7 @@
 - できること: ジェスチャー組み合わせへの表情割り当て、メニューからの表情モード切替/表情固定、まばたき・リップシンク干渉の制御、表情プレビュー、既存表情アニメの取り込み
 - **Modular Avatarと組み合わせて非破壊にFXへ統合する構成が標準**(生成物はMA経由でマージされる)
 - 注意: 表情はFXレイヤーを大きく占有するため、[AAO](09-avatar-optimizer.md)のOptimize Animatorとの併用で最適化はAAO側に任せる。MMDワールド互換はMA側の仕組み(KB [02](02-modular-avatar.md))に依存
+- **「アバターに適用」を押してもGesture Managerで確認すると元に戻る**(公式チュートリアルに既知の注意事項として記載): Gesture Manager/MAのバージョンの組み合わせにより、プレビューに表情メニューが反映されないことがある。対処: ①Gesture Managerのオブジェクトを**選択していない状態**でPlayを押す ②Playモードに入ってから改めてGesture Managerのオブジェクトを選択する ③Gameタブで反映されなければSceneタブで確認 ④Action(AFK)レイヤーのAFKチェックボックスがONだと無操作モーション優先で表情が隠れることがあるのでオフにする。それでも直らなければGesture Manager/MAを両方最新版へ
 
 ## ComboGestureExpressions(Haï)
 
@@ -100,6 +101,7 @@
 - **瞬きしなくなった**: ①表情メニューの固定解除 ②Avatar DescriptorのEyelids設定(改変で顔メッシュ名/シェイプキー名を変えると壊れる) ③表情アニメがまばたきシェイプを常時上書き ④AAOの自動凍結(Exclusionsで切り分け)の順で確認([13](13-vrchat-avatars-basics.md)/[09](09-avatar-optimizer.md))
 - **MMDワールドで表情停止**: 壊れていない可能性が高い(仕様に近い)。[02のMMD対応](02-modular-avatar.md)参照
 - **表情ツール導入後に別のギミックが壊れた**: FXレイヤー構成の変更が原因のことが多い。導入ツールを一時無効化して切り分け
+- **「FaceEmoで適用したのにGesture Managerだと元に戻る/反映されない」**: FaceEmo公式の既知事項(上記FaceEmo節を参照)。Gesture Managerを選択せずにPlay→Play後に選択、の順で回避
 
 ## 関連ページ
 
