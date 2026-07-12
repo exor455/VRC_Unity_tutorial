@@ -212,6 +212,22 @@ VRCメニュー仕様(同一パラメータのToggle群)により排他=ラジ�
 
 既定値 0 = どれも未選択で、シーンの初期表示状態がそのまま使われます。**関連制約**: Int自動パラメータ値が 0-255 を超えるとビルドエラー(MA 1.18+)。選択肢数の実務上限に関わります。
 
+#### isDefault による初期選択肢の設定
+
+排他グループ(共有parameter.name+automaticValue)の選択肢の1つに `ModularAvatarMenuItem.isDefault = true` を立てると、**パラメータ既定値が変わるのではなく、その項目に自動値 0 が割り当てられます**(他の項目は 1..N を継続)。
+
+実測 bake dump 例:
+```
+Item0 value=1 / Item1(isDefault=true) value=0 / Item2 value=2
+パラメータ: [Int def=0]
+```
+
+効果: param既定値 0 = isDefault項目が初期状態で選択済み(メニュー上もチェック表示、リアクティブも発動)。他の項目トグルをOFFにすると 0 に戻る = 既定に戻る。
+
+**実務への応用**: 衣装排他切替では「初期状態で着ている衣装」にisDefaultを立てるとよいです。シーンのactiveSelfとは独立に動くため、エディタ上の見た目を合わせたい場合はシーン側も「既定=ON/他=OFF」に揃えておきます。
+
+実測: Unity 2022.3.22f1 / MA 1.17.1 / NDMF 1.14.0 / VRCSDK3、SELESTIA_lilToon、2026-07-12
+
 **実測環境による検証結果(bake生成メニュー/パラメータ dump)**:
 ```
 params [AIDiag_Wardrobe type=Int def=0 synced=True]
