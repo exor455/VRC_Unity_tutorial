@@ -98,7 +98,11 @@
    - **シーンでシェイプキーの数値を変えただけ** → アバターの表情/リセットアニメ(WD ONや初期化アニメ)がそのシェイプキーを**毎フレーム0に上書き**している可能性が最有力。対処: そのシェイプキー名がFX内のアニメに含まれていないか確認、または「シェイプキーを固定する」方法(AAO Freeze BlendShapeやMAの仕組み)で**値を焼き込む** → [09](09-avatar-optimizer.md)/[02](02-modular-avatar.md)
    - **AAO(Trace and Optimize)を入れている** → 自動シェイプキー凍結が「アニメで動く値」を基準に固定した可能性。AAOのExclusionsで顔/体メッシュを除外して再確認 → [09](09-avatar-optimizer.md)
 3. **服だけ体型に追従しない**(素体は細いのに服が太い→貫通): 服側の同名シェイプキーが動いていない → [MA Blendshape Sync](02-modular-avatar.md)を素体→服に設定(別素体向け衣装の流用ならBS名の対応確認から: [20](20-avatar-differences.md))
-4. 色・材質が変わる系は§Fへ
+4. **オブジェクト/衣装が丸ごと消える**(Unity編集では表示):
+   - **最適化ツール(AAOなど)がメッシュを自動削除** → Remove Mesh系(Box/BlendShape/Mask/UV Tile)やゼロ多角形除去で不要と判定。AAOのExclusionsに該当メッシュ/オブジェクトを明示的に追加して除外 → [00 §cross-tool](00-cross-tool.md)/[09](09-avatar-optimizer.md)
+   - **トグル・Write Defaultで初期状態OFFになっている** → 衣装付属のメニューやトグルの初期値を確認。もしくはシェイプキー/ボーン操作のアニメがそのオブジェクトを非表示にしている → §G
+   - **Quest(モバイル)対応のみ、PC版では表示** → Questでは非対応オブジェクト扱いで除外されている。PC/Questで異なるアバターを用意する必要あり → §H
+5. 色・材質が変わる系は§Fへ
 
 ### F. 「色・材質がおかしい」
 
@@ -118,6 +122,10 @@
 - メニューが出ない → MA Menu Installerの設定/導入手順 → [02](02-modular-avatar.md)
 - 押しても反応しない → パラメータ名の不一致/FXに届いていない → [02](02-modular-avatar.md)
 - **自分には効くが他人に見えない** → パラメータの「同期(synced)」設定と**容量(256bit)超過** → [13](13-vrchat-avatars-basics.md)/[02](02-modular-avatar.md)
+- **手動導入したギミック/アニメがVRChatで動かない**(UnityのPlayでは動く):
+  1. **「どこで」動く？** Playボタン押してからアニメーションウィンドウをプレビュー再生したとき、動くか動かないか確認
+  2. **プレビューだけ動く(Playでは動かない)** → ギミックのアニメーター/パラメータ/メニューがアバターのFX Layer(Playable Layer)とExpression Parametersにマージされていない。**MA Merge Animator** でアニメーターを結線、**MA Parameters** でパラメータを合成、**MA Menu Installer** でメニューを追加。または付属のインストーラがあれば使用 → [02](02-modular-avatar.md)/[07](07-expression-gimmick-tools.md)
+  3. **Playでは動くのにVRChatだけ動かない** → Write Defaults(WD)設定の混在による初期化崩れ、パラメータのsynced設定漏れ、または容量超過でパラメータがカットされた可能性。Expression Parametersの容量確認([13](13-vrchat-avatars-basics.md))とWD統一([02](02-modular-avatar.md))を確認 → [13](13-vrchat-avatars-basics.md)/[02](02-modular-avatar.md)
 - PCでは動くのにQuestで壊れる → §H
 
 ### H. 「Quest(スマホ)の人から見えない/ロボットになる」
