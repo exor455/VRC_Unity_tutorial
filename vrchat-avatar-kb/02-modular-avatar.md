@@ -271,6 +271,7 @@ OFFリスト(既定衣装の取りこぼし)をスキンウェイトから機械
 ## よくあるトラブル
 
 - **服が飛ぶ/ボーンが吹き飛ぶ**: Merge Armatureのボーン対応失敗。プレフィックス設定、素体と衣装のボーン名、スケール(Scale Adjusterの併用)を確認
+- **髪・アクセサリ導入時に「Hipsボーンがない」エラー**: Merge Armature/Setup Outfitの誤用。髪・アクセサリはアーマチュアを持たず頭ボーン(Head)配下に付けるもの。→ MA Bone Proxy で Head に付け、位置/スケールを手動調整。Bone Proxy の Match Scale は基本 OFF
 - **メニューが出ない**: Menu Installerのインストール先、パラメータ未定義(MA Parametersの自動リネームとの絡み)。パラメータがMA Parameters定義済みでもメニュー値が0になる問題は1.15.1で修正
 - **MMDワールドで表情停止**: 1.12+のMMD処理を理解する(`MA VRChat Settings`で無効化可)。WD OFFステートのあるレイヤーへのMMD Layer Controlは警告(1.14+)。FXレイヤー1枚目が無効化される問題は1.18系で修正
 - **Play Audio(Animator Play Audio)のパスずれ**: 相対/絶対パスの解決規則が1.12.5で確定(絶対パス設定+相対Merge時、対象不在なら絶対として扱う)

@@ -38,6 +38,14 @@
 - Prefabステージでビルド系操作は不可(VQT 2.4.1がエラーメッセージ化)。**シーンに出してから**作業する
 - 「Auto Referenced」問題: 一部ツールはasmdef設定変更でコンパイル時間を最適化している(lilToon 2.0等)。自作スクリプトから参照できない場合はasmdef参照を明示
 
+## ビルドがそもそも始まらない(VRCAvatarDescriptorがない)
+
+Builder タブで「A VRCAvatarDescriptor is required to build an Avatar」と表示され、Build & Test ボタンが出ない場合、**シーンの選択対象またはアバタールートに VRCAvatarDescriptor コンポーネントがない**。チェック順:
+
+1. **配布物の「セットアップ済みプレハブ」を使っているか**: Booth 等の素体・アバター配布物のほとんどは Descriptor 入りプレハブを同梱。プレハブをシーンに入れ直す(最有力)
+2. **アバタールート(一番上の GO)に VRCAvatarDescriptor が付いているか**: 子 GO を選んでいないか確認。無ければ右クリック → Add Component → VRC Avatar Descriptor
+3. **VRChat SDK が導入されているか**: VCC/ALCOM で「VRChat SDK - Avatars」を導入・再導入。Descriptor が Missing Script 化していないか確認
+
 ## アップロードだけ失敗する
 
 チェック順:
