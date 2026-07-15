@@ -18,6 +18,18 @@ Avatars 3.0のアバターは複数のAnimator Controllerを層として持つ:
 - FX以外のレイヤーではマテリアル等の見た目プロパティを動かさないのが原則(FXはヒューマノイドボーンを動かさない)
 - MMDワールドはFXレイヤー1〜2を無効化して独自表情を流す→MAのMMD対応([02](02-modular-avatar.md))の背景
 
+### アニメーターステートの Motion=None に関する落とし穴
+
+**ステートに割り当てるAnimationClipを空(None)のまま放置してはいけない**。特に不要なステートを削除せずに Motion を None に置く改変が、意図しない初期化や表情の戻り不良、T-poseの原因になる。
+
+- **症状**: 表情がおかしい / シェイプキーの値が戻る / トグルが反応しない / NDMF/MA ビルドがエラーになることがある
+- **根本原因**: Motion=None のステートが Write Defaults 挙動と相互作用して、エディタ上は正常でもビルド時に初期化の対象になり、かつツールが null モーションを予期せず処理しようとするため
+- **正しい対処**:
+  1. **そのステートが本当に不要なら**: ステートもステート遷移も含めレイヤーごと削除する
+  2. **ステートは必要だが何もアニメしない場合**: カーブを一切持たない空の AnimationClip を作成して割り当てる(Motion=None ではなく、Empty AnimClip を使う)
+
+実測: NDMF/Modular Avatar の VRCSDK 統合時にビルドパイプラインが Motion 有無を判定してエラーになるケースあり。改変中の手直しではステートを無視せず、明示的に「削除する」または「空のクリップを付ける」のいずれかの決定を下す。
+
 ### スクリプトから FX レイヤーを特定する際の注意(AnimLayerType の enum 値、実測 VRCSDK3)
 
 `VRCAvatarDescriptor.baseAnimationLayers` を SerializedObject で走査するとき、`type.intValue` の値は `Base=0, Additive=2, Gesture=3, Action=4, FX=5`。**`== 4` は FX ではなく Action に当たる**。FX レイヤーを特定したいなら `== 5` を使う。または C# API で `desc.baseAnimationLayers` を直接走査して `type == VRCAvatarDescriptor.AnimLayerType.FX` で絞り込み、その配列インデックスを求めてから `GetArrayElementAtIndex` でアクセスするのが確実。

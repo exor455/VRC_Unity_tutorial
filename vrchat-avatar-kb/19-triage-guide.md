@@ -76,7 +76,7 @@
 
 **確認質問**: ①どうおかしい?(動かない/1つの表情で固まった/混ざって崩れる/まばたきしない) ②いつから?(何かを入れた直後?) ③特定のワールドだけ?(MMD系ワールド?)
 
-1. **表情が全く動かない・固まった**: FX(表情のアニメーション設定)が壊れたか、Write Defaults(WD)設定の混在。表情ツール(FaceEmo等)や大きなギミックを入れた直後なら、それを一旦抜いて確認 → [07](07-expression-gimmick-tools.md)/[02](02-modular-avatar.md)
+1. **表情が全く動かない・固まった**: FX(表情のアニメーション設定)が壊れたか、Write Defaults(WD)設定の混在。表情ツール(FaceEmo等)や大きなギミックを入れた直後なら、それを一旦抜いて確認 → [07](07-expression-gimmick-tools.md)/[02](02-modular-avatar.md)。レイヤーのステートが Motion=None → 空の AnimationClip に差し替えるかレイヤーごと削除([13](13-vrchat-avatars-basics.md))
 2. **特定ワールド(MMD/ダンス系)だけ死ぬ**: 仕様に近い既知問題。MMDワールドはFXの一部を乗っ取る → MA 1.12+のMMD対応と`MA VRChat Settings`で挙動制御 → [02](02-modular-avatar.md)
 3. **瞬きしなくなった**:
    - 表情メニューで表情を固定していないか(まず表情リセット)
