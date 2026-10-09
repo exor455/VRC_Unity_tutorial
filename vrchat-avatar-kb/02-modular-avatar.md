@@ -248,6 +248,46 @@ OFFリスト(既定衣装の取りこぼし)をスキンウェイトから機械
 - `VRCExpressionsMenu`: メニュー項目とそのパラメータ名が VRCExpressionParameters と一致するか
 - FX `AnimatorController`: activeSelf 切替ステートが存在するか
 
+### 2条件AND(両方ONのときだけObject Toggleが効く)
+
+2つのトグルの**両方がONのときだけ**オブジェクトを非表示にする構成を、Merge Animator なしで組める(リアクティブコンポーネントだけでANDが成立する)。
+
+- 実測環境: Unity 2022.3.22f1 / Modular Avatar 1.17.1 / NDMF 1.14.0。NDMF Manual Bake(`AvatarProcessor.ProcessAvatarUI`)の生成FXを読んで確認した実測(2026-10-10)。VRChat実機では未確認。
+
+構成(`AFK` と `Cond_B` は同じメニュー階層に置く):
+
+```
+AFK              (MA Menu Installer + MA Menu Item: Toggle, param=AFK_Toggle, saved/synced)
+ └ Gate          (空GO、初期 非アクティブ)
+    └ Toggle     (MA Object Toggle: 立方体.001 → OFF)
+Cond_B           (MA Menu Installer + MA Menu Item: Toggle, param=Cond_B, saved/synced
+                  + MA Object Toggle: AFK/Gate → ON)
+```
+
+bake生成FXの事実(実測):
+
+- レイヤー「MA Responsive: Gate」: 条件 `Cond_B > 0.995 && Cond_B < 1.005` で、AFK/Gate.m_IsActive=1 と Animatorパラメータカーブ `__MA/ActiveSelfProxy/Gate##N = 1` を書くステートへ遷移する。
+- レイヤー「MA Responsive: 立方体.001」: 条件 `__MA/ActiveSelfProxy/Gate##N > 0.5 && AFK_Toggle > 0.995 && AFK_Toggle < 1.005` で 立方体.001.m_IsActive=0 のステートへ遷移する。どれか1つでも外れると `<default>` に戻る。
+- 既定値: `__MA/ActiveSelfProxy/Gate##N` の既定は 0(Gateが初期非アクティブのため)。Reactive Component Defaults クリップで 立方体.001=1 / Gate=0 となる。
+- つまり立方体の条件式に Cond_B は**直接は出てこない**。Gate の activeSelf を中継する Float パラメータ `__MA/ActiveSelfProxy/<GO名>##N` を経由して間接的に入る。FX を読むときは、中継パラメータを書いているレイヤーまで辿ること。
+- 親(AFK)の MA Menu Item は、子孫の Object Toggle の条件に自分のパラメータ(AFK_Toggle == 1)を加える。Menu Item のGO自体には Object Toggle を置かなくてよい。
+
+4通りの真理値(bake条件からの導出):
+
+| AFK_Toggle | Cond_B | 立方体.001 |
+|---|---|---|
+| OFF | OFF | 表示 |
+| ON | OFF | 表示 |
+| OFF | ON | 表示 |
+| ON | ON | 非表示 |
+
+消えるのは両方ONのときだけ。
+
+注意:
+
+- 中継パラメータは別レイヤーのAnimatorカーブで書かれるため、Cond_B の切替から立方体への反映は1フレーム程度遅れうる(構造からの推定。実機未計測)。
+- パラメータ名 `AFK` はVRChat組み込みパラメータ。最小アバター(Playable Layers未カスタム)のbake FXにも `AFK` Bool が存在した(実測)。Menu Item のパラメータ名に `AFK` を使わないこと(今回は `AFK_Toggle` に改名している)。
+
 ## Quest対応時の注意
 
 - MA自体はQuestビルドでも同様に動作する(プラットフォーム非依存の変換)
